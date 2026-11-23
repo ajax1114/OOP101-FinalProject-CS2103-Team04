@@ -47,9 +47,6 @@ public class SignUpScreen implements Screen {
     private static final float ROW_H = 50f;
     private static final float LOGO_W = 554f;
     private static final float LOGO_H = 251f;
-
-    private static final String LABEL_SIGN_UP = "SIGN UP";
-    private static final String LABEL_SIGNING_UP = "Signing up...";
     private static final int MIN_PASSWORD_LENGTH = 4;
 
     private final Game game;

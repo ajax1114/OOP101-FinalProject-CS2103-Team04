@@ -38,7 +38,6 @@ public class StartMenuScreen implements Screen {
     private final Stage stage = new Stage(new FitViewport(VW, VH));
     private final List<Texture> textures = new ArrayList<>();
     private final Skin skin = new Skin();
-    private final Label lbl_info;
 
     public StartMenuScreen(Game game) {
         this.game = game;
@@ -66,8 +65,6 @@ public class StartMenuScreen implements Screen {
         menuStyle.over = skin.newDrawable("white", new Color(0.16f, 0.16f, 0.16f, 0.95f));
         menuStyle.down = skin.newDrawable("white", new Color(0.28f, 0.28f, 0.28f, 1f));
 
-        Label.LabelStyle infoStyle = new Label.LabelStyle(fontSmall, new Color(1f, 0.42f, 0.42f, 1f));
-
         // ---- background
         Image bg = new Image(bgTex);
         bg.setScaling(Scaling.fill);
@@ -89,9 +86,6 @@ public class StartMenuScreen implements Screen {
         TextButton btn_settings = new TextButton(Strings.menuSettings(), menuStyle);
         TextButton btn_logout = new TextButton(Strings.menuLogout(), menuStyle);
 
-        lbl_info = new Label("", infoStyle);
-        lbl_info.getColor().a = 0f;
-
         btn_start.addListener(onChange(() -> this.game.setScreen(new LoadingScreen(this.game))));
         btn_settings.addListener(onChange(() -> SettingsScreen.open((DungeonBound) this.game, () -> this.game.setScreen(new StartMenuScreen(this.game)))));
         btn_bestiary.addListener(onChange(() -> this.game.setScreen(new WikiMenuScreen(this.game))));
@@ -104,7 +98,6 @@ public class StartMenuScreen implements Screen {
         menu.add(btn_bestiary).size(BTN_W, BTN_H).padTop(16f).row();
         menu.add(btn_settings).size(BTN_W, BTN_H).padTop(16f).row();
         menu.add(btn_logout).size(BTN_W, BTN_H).padTop(16f).row();
-        menu.add(lbl_info).padTop(14f);
 
         Table root = new Table();
         root.setFillParent(true);
@@ -137,15 +130,6 @@ public class StartMenuScreen implements Screen {
                 r.run();
             }
         };
-    }
-
-    private void showInfo(String msg) {
-        lbl_info.setText(msg);
-        lbl_info.clearActions();
-        lbl_info.addAction(Actions.sequence(
-            Actions.alpha(1f, 0.15f),
-            Actions.delay(1.5f),
-            Actions.alpha(0f, 0.4f)));
     }
 
     // ---------------------------------------------------------------- Screen
