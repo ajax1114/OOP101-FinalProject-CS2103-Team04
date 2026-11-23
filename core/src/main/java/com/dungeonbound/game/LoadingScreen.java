@@ -37,8 +37,7 @@ public class LoadingScreen implements Screen {
     // Ang dark panel sa loading_bg ay nasa y 70..650 (art), at ang content (title hanggang text)
     // ay y 89..630. Para hindi lumampas sa panel, scale = taas ng screen / FIT_H.
     // FIT_H = 720 -> 1.0x (kapareho ng mockup). 700 -> 1.03x (pinakamalaki na kasya, may ~11px margin).
-    // WAG babaan sa ~690; lalampas ang title/text sa brick border. Kung gusto mo talagang mas malaki,
-    // i-re-export ang loading_bg na mas malaki ang dark panel.
+
     private static final float FIT_H = 700f;
     private static final float MAX_SCALE = 1.6f;
 

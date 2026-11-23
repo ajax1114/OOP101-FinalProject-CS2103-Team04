@@ -60,23 +60,23 @@ public class LoginScreen implements Screen {
     private final List<Texture> textures = new ArrayList<>();
     private final Skin skin;
 
-    private Image img_background;
-    private Image img_logo;
-    private Image img_iconUsername;
-    private Image img_iconPassword;
-    private Stack bg_iconUsername;
-    private Stack bg_iconPassword;
-    private TextField input_username;
-    private TextField input_password;
-    private ImageButton btn_togglePassword;
-    private CheckBox chk_rememberMe;
-    private Label lbl_error;
-    private TextButton link_forgotPassword;
-    private TextButton btn_login;
-    private TextButton btn_signUp;
-    private Table grp_header;
-    private Table grp_form;
-    private Table grp_actions;
+    private Image imgBackground;
+    private Image imgLogo;
+    private Image imgIconUsername;
+    private Image imgIconPassword;
+    private Stack bgIconUsername;
+    private Stack bgIconPassword;
+    private TextField inputUsername;
+    private TextField inputPassword;
+    private ImageButton btnTogglePassword;
+    private CheckBox chkRememberMe;
+    private Label lblError;
+    private TextButton linkForgotPassword;
+    private TextButton btnLogin;
+    private TextButton btnSignUp;
+    private Table grpHeader;
+    private Table grpForm;
+    private Table grpActions;
 
     private boolean loading = false;
 
@@ -130,18 +130,18 @@ public class LoginScreen implements Screen {
     // -------------------------------------------------------------------- UI
 
     private void buildUi() {
-        img_background = new Image(skin.getDrawable("bg_menu"));
-        img_background.setName("img_background");
-        img_background.setScaling(Scaling.fill);
-        img_background.setFillParent(true);
-        stage.addActor(img_background);
+        imgBackground = new Image(skin.getDrawable("bg_menu"));
+        imgBackground.setName("img_background");
+        imgBackground.setScaling(Scaling.fill);
+        imgBackground.setFillParent(true);
+        stage.addActor(imgBackground);
 
-        img_logo = new Image(skin.getDrawable("logo_title"));
-        img_logo.setName("img_logo");
-        img_logo.setScaling(Scaling.fit);
-        grp_header = new Table();
-        grp_header.setName("grp_header");
-        grp_header.add(img_logo).size(LOGO_W, LOGO_H);
+        imgLogo = new Image(skin.getDrawable("logo_title"));
+        imgLogo.setName("img_logo");
+        imgLogo.setScaling(Scaling.fit);
+        grpHeader = new Table();
+        grpHeader.setName("grp_header");
+        grpHeader.add(imgLogo).size(LOGO_W, LOGO_H);
 
         TextField.TextFieldStyle fieldStyle =
                 new TextField.TextFieldStyle(skin.get("input", TextField.TextFieldStyle.class));
@@ -150,73 +150,73 @@ public class LoginScreen implements Screen {
         if (cursor instanceof BaseDrawable) ((BaseDrawable) cursor).setMinWidth(2f);
         fieldStyle.cursor = cursor;
 
-        img_iconUsername = new Image(skin.getDrawable("icon_username"));
-        img_iconUsername.setName("img_iconUsername");
-        img_iconPassword = new Image(skin.getDrawable("icon_password"));
-        img_iconPassword.setName("img_iconPassword");
-        bg_iconUsername = iconBox("bg_iconUsername", img_iconUsername);
-        bg_iconPassword = iconBox("bg_iconPassword", img_iconPassword);
+        imgIconUsername = new Image(skin.getDrawable("icon_username"));
+        imgIconUsername.setName("img_iconUsername");
+        imgIconPassword = new Image(skin.getDrawable("icon_password"));
+        imgIconPassword.setName("img_iconPassword");
+        bgIconUsername = iconBox("bg_iconUsername", imgIconUsername);
+        bgIconPassword = iconBox("bg_iconPassword", imgIconPassword);
 
-        input_username = new TextField("", fieldStyle);
-        input_username.setName("input_username");
-        input_username.setMessageText(Strings.usernamePlaceholder());
+        inputUsername = new TextField("", fieldStyle);
+        inputUsername.setName("input_username");
+        inputUsername.setMessageText(Strings.usernamePlaceholder());
 
-        input_password = new TextField("", fieldStyle);
-        input_password.setName("input_password");
-        input_password.setMessageText(Strings.passwordPlaceholder());
-        input_password.setPasswordCharacter('*');
-        input_password.setPasswordMode(true);
+        inputPassword = new TextField("", fieldStyle);
+        inputPassword.setName("input_password");
+        inputPassword.setMessageText(Strings.passwordPlaceholder());
+        inputPassword.setPasswordCharacter('*');
+        inputPassword.setPasswordMode(true);
 
-        btn_togglePassword = new ImageButton(skin, "btn_togglePassword");
-        btn_togglePassword.setName("btn_togglePassword");
-        btn_togglePassword.getImage().setScaling(Scaling.fit);
-        btn_togglePassword.getImageCell().size(28f);
+        btnTogglePassword = new ImageButton(skin, "btn_togglePassword");
+        btnTogglePassword.setName("btn_togglePassword");
+        btnTogglePassword.getImage().setScaling(Scaling.fit);
+        btnTogglePassword.getImageCell().size(28f);
 
-        lbl_error = new Label("", skin, "error");
-        lbl_error.setName("lbl_error");
-        lbl_error.setWrap(true);
-        lbl_error.setVisible(false);
+        lblError = new Label("", skin, "error");
+        lblError.setName("lbl_error");
+        lblError.setWrap(true);
+        lblError.setVisible(false);
 
-        chk_rememberMe = new CheckBox(Strings.rememberMe(), skin, "chk_rememberMe");
-        chk_rememberMe.setName("chk_rememberMe");
-        chk_rememberMe.getImage().setScaling(Scaling.fill);
-        chk_rememberMe.getImageCell().size(36f).padRight(14f);
+        chkRememberMe = new CheckBox(Strings.rememberMe(), skin, "chk_rememberMe");
+        chkRememberMe.setName("chk_rememberMe");
+        chkRememberMe.getImage().setScaling(Scaling.fill);
+        chkRememberMe.getImageCell().size(36f).padRight(14f);
 
-        link_forgotPassword = new TextButton(Strings.forgotPassword(), skin, "link");
-        link_forgotPassword.setName("link_forgotPassword");
+        linkForgotPassword = new TextButton(Strings.forgotPassword(), skin, "link");
+        linkForgotPassword.setName("link_forgotPassword");
 
-        btn_login = new TextButton(Strings.loginBtn(), skin, "btn_login");
-        btn_login.setName("btn_login");
-        btn_signUp = new TextButton(Strings.signUpBtn(), skin, "btn_signUp");
-        btn_signUp.setName("btn_signUp");
-        grp_actions = new Table();
-        grp_actions.setName("grp_actions");
-        grp_actions.add(btn_login).size(FORM_W / 2f, ROW_H);
-        grp_actions.add(btn_signUp).size(FORM_W / 2f, ROW_H);
+        btnLogin = new TextButton(Strings.loginBtn(), skin, "btn_login");
+        btnLogin.setName("btn_login");
+        btnSignUp = new TextButton(Strings.signUpBtn(), skin, "btn_signUp");
+        btnSignUp.setName("btn_signUp");
+        grpActions = new Table();
+        grpActions.setName("grp_actions");
+        grpActions.add(btnLogin).size(FORM_W / 2f, ROW_H);
+        grpActions.add(btnSignUp).size(FORM_W / 2f, ROW_H);
 
-        grp_form = new Table();
-        grp_form.setName("grp_form");
-        grp_form.add(bg_iconUsername).size(ICON_W, ROW_H);
-        grp_form.add(input_username).colspan(2).width(FORM_W - ICON_W).height(ROW_H);
-        grp_form.row().padTop(18f);
-        grp_form.add(bg_iconPassword).size(ICON_W, ROW_H);
-        grp_form.add(input_password).width(FORM_W - ICON_W - TOGGLE_W).height(ROW_H);
-        grp_form.add(btn_togglePassword).size(TOGGLE_W, ROW_H);
-        grp_form.row();
-        grp_form.add(lbl_error).colspan(3).width(FORM_W).minHeight(28f).left().padTop(10f);
-        grp_form.row();
-        grp_form.add(chk_rememberMe).colspan(3).left().height(40f).padTop(8f);
-        grp_form.row();
-        grp_form.add(link_forgotPassword).colspan(3).right().padTop(6f);
-        grp_form.row();
-        grp_form.add(grp_actions).colspan(3).padTop(40f);
+        grpForm = new Table();
+        grpForm.setName("grp_form");
+        grpForm.add(bgIconUsername).size(ICON_W, ROW_H);
+        grpForm.add(inputUsername).colspan(2).width(FORM_W - ICON_W).height(ROW_H);
+        grpForm.row().padTop(18f);
+        grpForm.add(bgIconPassword).size(ICON_W, ROW_H);
+        grpForm.add(inputPassword).width(FORM_W - ICON_W - TOGGLE_W).height(ROW_H);
+        grpForm.add(btnTogglePassword).size(TOGGLE_W, ROW_H);
+        grpForm.row();
+        grpForm.add(lblError).colspan(3).width(FORM_W).minHeight(28f).left().padTop(10f);
+        grpForm.row();
+        grpForm.add(chkRememberMe).colspan(3).left().height(40f).padTop(8f);
+        grpForm.row();
+        grpForm.add(linkForgotPassword).colspan(3).right().padTop(6f);
+        grpForm.row();
+        grpForm.add(grpActions).colspan(3).padTop(40f);
 
         Table panel = new Table();
         panel.setName("bg_panelShade");
         panel.setBackground(skin.getDrawable("bg_panelShade"));
         panel.top();
-        panel.add(grp_header).row();
-        panel.add(grp_form).padTop(40f);
+        panel.add(grpHeader).row();
+        panel.add(grpForm).padTop(40f);
 
         Table root = new Table();
         root.setName("screen_login");
@@ -244,22 +244,22 @@ public class LoginScreen implements Screen {
             hideError();
             updateLoginEnabled();
         });
-        input_username.addListener(onType);
-        input_password.addListener(onType);
+        inputUsername.addListener(onType);
+        inputPassword.addListener(onType);
 
-        input_username.setFocusTraversal(true);
-        input_password.setFocusTraversal(true);
+        inputUsername.setFocusTraversal(true);
+        inputPassword.setFocusTraversal(true);
 
-        input_password.setTextFieldListener((tf, c) -> {
+        inputPassword.setTextFieldListener((tf, c) -> {
             if (c == '\r' || c == '\n') trySubmit();
         });
 
-        btn_togglePassword.addListener(onChange(() ->
-                input_password.setPasswordMode(!btn_togglePassword.isChecked())));
+        btnTogglePassword.addListener(onChange(() ->
+                inputPassword.setPasswordMode(!btnTogglePassword.isChecked())));
 
-        btn_login.addListener(onChange(this::trySubmit));
-        btn_signUp.addListener(onChange(this::onSignUpClicked));
-        link_forgotPassword.addListener(onChange(this::onForgotPasswordClicked));
+        btnLogin.addListener(onChange(this::trySubmit));
+        btnSignUp.addListener(onChange(this::onSignUpClicked));
+        linkForgotPassword.addListener(onChange(this::onForgotPasswordClicked));
 
         FocusListener keyboard = new FocusListener() {
             @Override
@@ -276,8 +276,8 @@ public class LoginScreen implements Screen {
                 }
             }
         };
-        input_username.addListener(keyboard);
-        input_password.addListener(keyboard);
+        inputUsername.addListener(keyboard);
+        inputPassword.addListener(keyboard);
 
         stage.addListener(new InputListener() {
             @Override
@@ -305,12 +305,12 @@ public class LoginScreen implements Screen {
     // ----------------------------------------------------------------- logic
 
     private void updateLoginEnabled() {
-        boolean empty = input_username.getText().trim().isEmpty() || input_password.getText().isEmpty();
-        btn_login.setDisabled(loading || empty);
+        boolean empty = inputUsername.getText().trim().isEmpty() || inputPassword.getText().isEmpty();
+        btnLogin.setDisabled(loading || empty);
     }
 
     private void trySubmit() {
-        if (loading || btn_login.isDisabled()) return;
+        if (loading || btnLogin.isDisabled()) return;
         hideError();
         setLoading(true);
         stage.setKeyboardFocus(null);
@@ -331,33 +331,33 @@ public class LoginScreen implements Screen {
 
     private void setLoading(boolean value) {
         loading = value;
-        setButtonText(btn_login, value ? Strings.loggingIn() : Strings.loginBtn(), FORM_W / 2f);
-        input_username.setDisabled(value);
-        input_password.setDisabled(value);
-        btn_togglePassword.setDisabled(value);
-        btn_signUp.setDisabled(value);
-        link_forgotPassword.setDisabled(value);
+        setButtonText(btnLogin, value ? Strings.loggingIn() : Strings.loginBtn(), FORM_W / 2f);
+        inputUsername.setDisabled(value);
+        inputPassword.setDisabled(value);
+        btnTogglePassword.setDisabled(value);
+        btnSignUp.setDisabled(value);
+        linkForgotPassword.setDisabled(value);
         updateLoginEnabled();
     }
 
     private void showError(String message) {
-        lbl_error.setText(message);
-        lbl_error.setVisible(true);
-        lbl_error.clearActions();
-        lbl_error.getColor().a = 0f;
-        lbl_error.addAction(Actions.fadeIn(0.2f));
+        lblError.setText(message);
+        lblError.setVisible(true);
+        lblError.clearActions();
+        lblError.getColor().a = 0f;
+        lblError.addAction(Actions.fadeIn(0.2f));
     }
 
     private void hideError() {
-        lbl_error.clearActions();
-        lbl_error.setVisible(false);
+        lblError.clearActions();
+        lblError.setVisible(false);
     }
 
     /** PLACEHOLDER: walang tunay na backend. Password na mas maikli sa 4 = fail. */
     private void onLoginSubmit() {
-        final String username = input_username.getText().trim();
-        final String password = input_password.getText();
-        final boolean remember = chk_rememberMe.isChecked();
+        final String username = inputUsername.getText().trim();
+        final String password = inputPassword.getText();
+        final boolean remember = chkRememberMe.isChecked();
         Gdx.app.log("LoginScreen", "onLoginSubmit user=" + username + " remember=" + remember);
 
         stage.addAction(Actions.sequence(
@@ -396,7 +396,7 @@ private void onSignUpClicked() {
         Gdx.input.setInputProcessor(stage);
         stage.getRoot().getColor().a = 0f;
         stage.getRoot().addAction(Actions.fadeIn(0.6f));
-        if (!isMobile()) stage.setKeyboardFocus(input_username);
+        if (!isMobile()) stage.setKeyboardFocus(inputUsername);
     }
 
     @Override

@@ -228,7 +228,7 @@ public class AudioManager {
     // ----------------------------------------------------------------- Update
 
     /**
-     * Tawagin sa bawat render frame (hal. sa render() ng active screen) para sa smooth fades.
+     * Tawagin sa bawat render frame para sa smooth fades.
      */
     public void update(float delta) {
         if (fadingMusic && currentMusic != null) {

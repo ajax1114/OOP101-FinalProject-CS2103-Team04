@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * Key bindings ng player (saved). Default: arrows / WASD / Enter / ESC.
- * Para sa custom keys sa Settings screen mo:
+ * Para sa custom keys sa Settings screen:
  *     GameControls.set(GameControls.Action.LEFT, Input.Keys.Q, Input.Keys.LEFT);
  */
 public final class GameControls {
