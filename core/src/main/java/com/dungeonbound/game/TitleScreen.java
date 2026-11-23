@@ -43,7 +43,6 @@ public class TitleScreen implements Screen {
 
     // transition recipe (data/timeline.json -> transition)
     private static final float TR_MS = 70f;
-    private static final float[] FOCUS_A = {0f, .2f, .45f, .7f, .9f, 1f};
     private static final float PIVOT_X = 940f, PIVOT_Y_DOWN = 650f;
     private static final float TR_TOTAL = 16f;          // frames: 3 flash + 13 push-in
 

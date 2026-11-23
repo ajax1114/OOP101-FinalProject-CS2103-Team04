@@ -50,10 +50,6 @@ public class LoginScreen implements Screen {
     private static final float LOGO_W = 554f;
     private static final float LOGO_H = 251f;
 
-    private static final String LABEL_LOGIN = "LOGIN";
-    private static final String LABEL_LOGGING_IN = "Logging in...";
-    private static final String LABEL_SIGN_UP = "SIGN UP";
-
     private static final String[] UI_IMAGES = {
         "white", "img_background", "img_logo", "img_iconUsername",
         "img_iconPassword", "img_eyeOpen", "img_eyeClosed"
