@@ -96,13 +96,13 @@ public class LoadingScreen implements Screen {
         queueAssets();
     }
 
-    /** Queue all assets needed by GameScreen. Add entries here when gameplay assets are ready. */
+    /** DITO ILAGAY lahat ng kailangan ng GameScreen. Dapat umiiral ang bawat file sa assets/. */
     private void queueAssets() {
         assets.setLoader(TiledMap.class, new TmxMapLoader());
-        // TODO: add gameplay assets when GameScreen is implemented, e.g.:
         // assets.load("maps/level1.tmx", TiledMap.class);
-        // assets.load("sprites/player.atlas", TextureAtlas.class);
-        // assets.load("audio/sfx/hit.ogg", Sound.class);
+        // assets.load("sprites/player.png", Texture.class);
+        // assets.load("sprites/enemies.atlas", TextureAtlas.class);
+        // assets.load("sfx/hit.ogg", Sound.class);
     }
 
     /** Inaayos ang posisyon at laki ng lahat ng layer ayon sa kasalukuyang laki ng virtual screen. */
@@ -204,12 +204,15 @@ public class LoadingScreen implements Screen {
 
     private void goToGame() {
         try {
-            // TODO: Replace with GameScreen once gameplay is integrated:
-            //   game.setScreen(new GameScreen(game, assets));
-            // For now, return to main menu so the loading flow can be tested.
+            Gdx.app.log("LoadingScreen", "1. lilipat na");
+            // TEST MODE (wala pang GameScreen): balik sa menu
             game.setScreen(new StartMenuScreen(game));
-            assets.dispose();
+            assets.dispose(); // walang gagamit nito sa test mode
+            // KAPAG MAY GameScreen NA, palitan ang 3 linya sa itaas ng:
+            // game.setScreen(new GameScreen(game, assets));
+            Gdx.app.log("LoadingScreen", "2. nakalipat na");
             dispose();
+            Gdx.app.log("LoadingScreen", "3. tapos dispose");
         } catch (Throwable t) {
             writeCrashLog(t);
             throw new RuntimeException(t);

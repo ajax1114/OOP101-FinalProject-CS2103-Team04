@@ -42,8 +42,7 @@ public class LoreScreen implements Screen {
 
     private static final float W = 1920, H = 1080;
 
-    // ====== FONTS ======
-    // TODO: Replace both with dedicated title/body fonts once finalized.
+    // ====== FONTS (TODO: palitan ng final fonts; pixel font para sa title, bold sans para sa body) ======
     private static final String TITLE_FONT = "fonts/font_body.ttf";
     private static final String BODY_FONT  = "fonts/font_body.ttf";
     private static final Color TITLE_COLOR = new Color(1f, 0.93f, 0.75f, 1f);   // cream

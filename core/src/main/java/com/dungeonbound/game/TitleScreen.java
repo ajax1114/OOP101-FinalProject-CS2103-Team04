@@ -1,17 +1,8 @@
+// TitleScreen.java – rewritten to play the Dungeonbound animation pack (libGDX)
+// Needs: assets under  core/assets/title/  (atlas/, background/, data/, sprites/glow_*.png)
+//        core/assets/audio/ambience_crickets.wav, bgm_title.mp3, sfx_whoosh.wav
+// Uses your existing: AudioManager, LoginScreen.
 package com.dungeonbound.game;
-
-/**
- * TitleScreen – plays the DungeonBound animated title sequence (libGDX).
- *
- * <p>Required assets:
- * <ul>
- *   <li>{@code title/atlas/} – cape, fx, title atlases</li>
- *   <li>{@code title/background/} – background PNGs</li>
- *   <li>{@code title/data/} – cape.json, particles.json, sprites.json, timeline.json</li>
- *   <li>{@code title/sprites/glow_*.png}</li>
- *   <li>{@code audio/ambience_crickets.wav}, {@code audio/bgm_title.mp3}, {@code audio/sfx_whoosh.wav}</li>
- * </ul>
- */
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Input;
@@ -499,10 +490,10 @@ public class TitleScreen implements Screen {
         batch.end();
     }
 
-    @Override public void resize(int width, int height) { viewport.update(width, height, false); }
+    @Override public void resize(int w, int h) { viewport.update(w, h, true); }
     @Override public void pause() {}
     @Override public void resume() {}
-    @Override public void hide() { if (Gdx.input.getInputProcessor() != null) Gdx.input.setInputProcessor(null); }
+    @Override public void hide() {}
 
     @Override public void dispose() {
         batch.dispose();
@@ -514,5 +505,8 @@ public class TitleScreen implements Screen {
         if (vignette != null) vignette.dispose();
         if (font != null) font.dispose();
         for (Texture t : textures) t.dispose();
+        textures.clear();
+        glowTex.clear();
+        anims.clear();
     }
 }

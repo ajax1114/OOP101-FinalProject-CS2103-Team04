@@ -6,13 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 
-/**
- * GameScreen – placeholder screen shown after loading completes.
- *
- * <p><b>TODO:</b> Replace with the actual dungeon gameplay once the
- * world/combat modules are ready. Currently displays a solid green screen
- * and returns to the main menu on tap or ESC.
- */
+/** TEMPORARY stub: blangkong screen lang para ma-test ang loading flow. */
 public class GameScreen implements Screen {
 
     private final Game game;
@@ -27,10 +21,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.1f, 0.25f, 0.1f, 1f); // green tint – placeholder indicator
+        Gdx.gl.glClearColor(0.1f, 0.25f, 0.1f, 1f); // berde para halatang nakarating ka na
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Tap or ESC → return to main menu
+        // click o ESC = balik sa menu
         if (Gdx.input.justTouched() || Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ESCAPE)) {
             game.setScreen(new StartMenuScreen(game));
             dispose();
