@@ -27,16 +27,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.Align;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Sign-up screen (Figma frame: screen_signUp). Variable names == Actor names == Figma layer names.
- * Self-contained: walang uiskin.json na kailangan.
- *
- * Assets: ui/img_background.png, ui/img_logo.png (pareho sa login), fonts/font_body.ttf
- */
 public class SignUpScreen implements Screen {
 
     private static final float VW = 1280f;
@@ -58,21 +51,21 @@ public class SignUpScreen implements Screen {
     private BitmapFont fontSmall;
     private TextureRegionDrawable white; // 1 puting pixel; tina-tint para sa lahat ng kulay
 
-    // Actors (same names as Figma layers)
-    private Image img_background;
-    private Image img_logo;
-    private Label lbl_username;
-    private Label lbl_password;
-    private Label lbl_confirmPassword;
-    private TextField input_username;
-    private TextField input_password;
-    private TextField input_confirmPassword;
-    private Label lbl_error;
-    private TextButton btn_login;
-    private TextButton btn_signUp;
-    private Table grp_header;
-    private Table grp_form;
-    private Table grp_actions;
+    // Actors
+    private Image imgBackground;
+    private Image imgLogo;
+    private Label lblUsername;
+    private Label lblPassword;
+    private Label lblConfirmPassword;
+    private TextField inputUsername;
+    private TextField inputPassword;
+    private TextField inputConfirmPassword;
+    private Label lblError;
+    private TextButton btnLogin;
+    private TextButton btnSignUp;
+    private Table grpHeader;
+    private Table grpForm;
+    private Table grpActions;
 
     private boolean loading = false;
 
@@ -176,74 +169,74 @@ public class SignUpScreen implements Screen {
         signUpStyle.disabled = tint(0.1f, 0.1f, 0.1f, 1f);
 
         // --- grp_background
-        img_background = new Image(image("ui/bg_menu.png"));
-        img_background.setName("img_background");
-        img_background.setScaling(Scaling.fill);
-        img_background.setFillParent(true);
-        stage.addActor(img_background);
+        imgBackground = new Image(image("ui/bg_menu.png"));
+        imgBackground.setName("img_background");
+        imgBackground.setScaling(Scaling.fill);
+        imgBackground.setFillParent(true);
+        stage.addActor(imgBackground);
 
         // --- grp_header
-        img_logo = new Image(image("ui/logo_title.png"));
-        img_logo.setName("img_logo");
-        img_logo.setScaling(Scaling.fit);
-        grp_header = new Table();
-        grp_header.setName("grp_header");
-        grp_header.add(img_logo).size(LOGO_W, LOGO_H);
+        imgLogo = new Image(image("ui/logo_title.png"));
+        imgLogo.setName("img_logo");
+        imgLogo.setScaling(Scaling.fit);
+        grpHeader = new Table();
+        grpHeader.setName("grp_header");
+        grpHeader.add(imgLogo).size(LOGO_W, LOGO_H);
 
         // --- grp_form
-        lbl_username = new Label(Strings.lblUsername(), labelStyle);
-        lbl_username.setName("lbl_username");
-        lbl_password = new Label(Strings.lblPassword(), labelStyle);
-        lbl_password.setName("lbl_password");
-        lbl_confirmPassword = new Label(Strings.lblConfirmPassword(), labelStyle);
-        lbl_confirmPassword.setName("lbl_confirmPassword");
+        lblUsername = new Label(Strings.lblUsername(), labelStyle);
+        lblUsername.setName("lbl_username");
+        lblPassword = new Label(Strings.lblPassword(), labelStyle);
+        lblPassword.setName("lbl_password");
+        lblConfirmPassword = new Label(Strings.lblConfirmPassword(), labelStyle);
+        lblConfirmPassword.setName("lbl_confirmPassword");
 
-        input_username = new TextField("", fieldStyle);
-        input_username.setName("input_username");
+        inputUsername = new TextField("", fieldStyle);
+        inputUsername.setName("input_username");
 
-        input_password = new TextField("", fieldStyle);
-        input_password.setName("input_password");
-        input_password.setPasswordCharacter('*');
-        input_password.setPasswordMode(true);
+        inputPassword = new TextField("", fieldStyle);
+        inputPassword.setName("input_password");
+        inputPassword.setPasswordCharacter('*');
+        inputPassword.setPasswordMode(true);
 
-        input_confirmPassword = new TextField("", fieldStyle);
-        input_confirmPassword.setName("input_confirmPassword");
-        input_confirmPassword.setPasswordCharacter('*');
-        input_confirmPassword.setPasswordMode(true);
+        inputConfirmPassword = new TextField("", fieldStyle);
+        inputConfirmPassword.setName("input_confirmPassword");
+        inputConfirmPassword.setPasswordCharacter('*');
+        inputConfirmPassword.setPasswordMode(true);
 
-        lbl_error = new Label("", errorStyle);
-        lbl_error.setName("lbl_error");
-        lbl_error.setWrap(true);
-        lbl_error.setVisible(false);
+        lblError = new Label("", errorStyle);
+        lblError.setName("lbl_error");
+        lblError.setWrap(true);
+        lblError.setVisible(false);
 
         // --- grp_actions
-        btn_login = new TextButton(Strings.loginBtn(), loginStyle);
-        btn_login.setName("btn_login");
-        btn_signUp = new TextButton(Strings.signUpBtn(), signUpStyle);
-        btn_signUp.setName("btn_signUp");
-        grp_actions = new Table();
-        grp_actions.setName("grp_actions");
-        grp_actions.add(btn_login).size(FORM_W / 2f, ROW_H);
-        grp_actions.add(btn_signUp).size(FORM_W / 2f, ROW_H);
+        btnLogin = new TextButton(Strings.loginBtn(), loginStyle);
+        btnLogin.setName("btn_login");
+        btnSignUp = new TextButton(Strings.signUpBtn(), signUpStyle);
+        btnSignUp.setName("btn_signUp");
+        grpActions = new Table();
+        grpActions.setName("grp_actions");
+        grpActions.add(btnLogin).size(FORM_W / 2f, ROW_H);
+        grpActions.add(btnSignUp).size(FORM_W / 2f, ROW_H);
 
-        grp_form = new Table();
-        grp_form.setName("grp_form");
-        grp_form.add(lbl_username).left().padBottom(6f).row();
-        grp_form.add(input_username).width(FORM_W).height(ROW_H).row();
-        grp_form.add(lbl_password).left().padTop(14f).padBottom(6f).row();
-        grp_form.add(input_password).width(FORM_W).height(ROW_H).row();
-        grp_form.add(lbl_confirmPassword).left().padTop(14f).padBottom(6f).row();
-        grp_form.add(input_confirmPassword).width(FORM_W).height(ROW_H).row();
-        grp_form.add(lbl_error).width(FORM_W).minHeight(28f).left().padTop(8f).row();
-        grp_form.add(grp_actions).padTop(16f);
+        grpForm = new Table();
+        grpForm.setName("grp_form");
+        grpForm.add(lblUsername).left().padBottom(6f).row();
+        grpForm.add(inputUsername).width(FORM_W).height(ROW_H).row();
+        grpForm.add(lblPassword).left().padTop(14f).padBottom(6f).row();
+        grpForm.add(inputPassword).width(FORM_W).height(ROW_H).row();
+        grpForm.add(lblConfirmPassword).left().padTop(14f).padBottom(6f).row();
+        grpForm.add(inputConfirmPassword).width(FORM_W).height(ROW_H).row();
+        grpForm.add(lblError).width(FORM_W).minHeight(28f).left().padTop(8f).row();
+        grpForm.add(grpActions).padTop(16f);
 
         // --- left panel (shade) + root
         Table panel = new Table();
         panel.setName("bg_panelShade");
         panel.setBackground(tint(0f, 0f, 0f, 0.46f));
         panel.top();
-        panel.add(grp_header).row();
-        panel.add(grp_form).padTop(20f);
+        panel.add(grpHeader).row();
+        panel.add(grpForm).padTop(20f);
 
         Table root = new Table();
         root.setName("screen_signUp");
@@ -261,22 +254,22 @@ public class SignUpScreen implements Screen {
             hideError();
             updateSignUpEnabled();
         });
-        input_username.addListener(onType);
-        input_password.addListener(onType);
-        input_confirmPassword.addListener(onType);
+        inputUsername.addListener(onType);
+        inputPassword.addListener(onType);
+        inputConfirmPassword.addListener(onType);
 
         // Tab: username -> password -> confirm (default focus traversal, nasa iisang Table)
-        input_username.setFocusTraversal(true);
-        input_password.setFocusTraversal(true);
-        input_confirmPassword.setFocusTraversal(true);
+        inputUsername.setFocusTraversal(true);
+        inputPassword.setFocusTraversal(true);
+        inputConfirmPassword.setFocusTraversal(true);
 
         // Enter sa huling field = pindutin ang SIGN UP
-        input_confirmPassword.setTextFieldListener((tf, c) -> {
+        inputConfirmPassword.setTextFieldListener((tf, c) -> {
             if (c == '\r' || c == '\n') trySubmit();
         });
 
-        btn_signUp.addListener(onChange(this::trySubmit));
-        btn_login.addListener(onChange(this::onLoginClicked));
+        btnSignUp.addListener(onChange(this::trySubmit));
+        btnLogin.addListener(onChange(this::onLoginClicked));
     }
 
     private static ChangeListener onChange(final Runnable r) {
@@ -291,21 +284,21 @@ public class SignUpScreen implements Screen {
     // ----------------------------------------------------------------- logic
 
     private void updateSignUpEnabled() {
-        boolean empty = input_username.getText().trim().isEmpty()
-                || input_password.getText().isEmpty()
-                || input_confirmPassword.getText().isEmpty();
-        btn_signUp.setDisabled(loading || empty);
+        boolean empty = inputUsername.getText().trim().isEmpty()
+                || inputPassword.getText().isEmpty()
+                || inputConfirmPassword.getText().isEmpty();
+        btnSignUp.setDisabled(loading || empty);
     }
 
     private void trySubmit() {
-        if (loading || btn_signUp.isDisabled()) return;
+        if (loading || btnSignUp.isDisabled()) return;
 
-        String pw = input_password.getText();
+        String pw = inputPassword.getText();
         if (pw.length() < MIN_PASSWORD_LENGTH) {
             showError("Password must be at least " + MIN_PASSWORD_LENGTH + " characters.");
             return;
         }
-        if (!pw.equals(input_confirmPassword.getText())) {
+        if (!pw.equals(inputConfirmPassword.getText())) {
             showError(Strings.errPasswordsNotMatch());
             return;
         }
@@ -329,25 +322,25 @@ public class SignUpScreen implements Screen {
 
     private void setLoading(boolean value) {
         loading = value;
-        setButtonText(btn_signUp, value ? Strings.signingUp() : Strings.signUpBtn(), FORM_W / 2f);
-        input_username.setDisabled(value);
-        input_password.setDisabled(value);
-        input_confirmPassword.setDisabled(value);
-        btn_login.setDisabled(value);
+        setButtonText(btnSignUp, value ? Strings.signingUp() : Strings.signUpBtn(), FORM_W / 2f);
+        inputUsername.setDisabled(value);
+        inputPassword.setDisabled(value);
+        inputConfirmPassword.setDisabled(value);
+        btnLogin.setDisabled(value);
         updateSignUpEnabled();
     }
 
     private void showError(String message) {
-        lbl_error.setText(message);
-        lbl_error.setVisible(true);
-        lbl_error.clearActions();
-        lbl_error.getColor().a = 0f;
-        lbl_error.addAction(Actions.fadeIn(0.2f));
+        lblError.setText(message);
+        lblError.setVisible(true);
+        lblError.clearActions();
+        lblError.getColor().a = 0f;
+        lblError.addAction(Actions.fadeIn(0.2f));
     }
 
     private void hideError() {
-        lbl_error.clearActions();
-        lbl_error.setVisible(false);
+        lblError.clearActions();
+        lblError.setVisible(false);
     }
 
     /**
@@ -355,7 +348,7 @@ public class SignUpScreen implements Screen {
      * tapos tawagin ang onSignUpSuccess() o onSignUpFailed(message).
      */
     private void onSignUpSubmit() {
-        Gdx.app.log("SignUpScreen", "onSignUpSubmit user=" + input_username.getText().trim());
+        Gdx.app.log("SignUpScreen", "onSignUpSubmit user=" + inputUsername.getText().trim());
         stage.addAction(Actions.sequence(
                 Actions.delay(1.5f), // fake network wait
                 Actions.run(this::onSignUpSuccess)));
@@ -384,7 +377,7 @@ public class SignUpScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         stage.getRoot().getColor().a = 0f;
         stage.getRoot().addAction(Actions.fadeIn(0.6f));
-        stage.setKeyboardFocus(input_username);
+        stage.setKeyboardFocus(inputUsername);
     }
 
     @Override

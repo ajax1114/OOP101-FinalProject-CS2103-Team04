@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -81,23 +80,23 @@ public class StartMenuScreen implements Screen {
         logo.setScaling(Scaling.fit);
 
         // ---- buttons
-        TextButton btn_start = new TextButton(Strings.menuPlay(), menuStyle);
-        TextButton btn_bestiary = new TextButton(Strings.menuBestiary(), menuStyle);
-        TextButton btn_settings = new TextButton(Strings.menuSettings(), menuStyle);
-        TextButton btn_logout = new TextButton(Strings.menuLogout(), menuStyle);
+        TextButton btnStart = new TextButton(Strings.menuPlay(), menuStyle);
+        TextButton btnBestiary = new TextButton(Strings.menuBestiary(), menuStyle);
+        TextButton btnSettings = new TextButton(Strings.menuSettings(), menuStyle);
+        TextButton btnLogout = new TextButton(Strings.menuLogout(), menuStyle);
 
-        btn_start.addListener(onChange(() -> this.game.setScreen(new LoadingScreen(this.game))));
-        btn_settings.addListener(onChange(() -> SettingsScreen.open((DungeonBound) this.game, () -> this.game.setScreen(new StartMenuScreen(this.game)))));
-        btn_bestiary.addListener(onChange(() -> this.game.setScreen(new WikiMenuScreen(this.game))));
-        btn_logout.addListener(onChange(() -> this.game.setScreen(new LoginScreen(this.game))));
+        btnStart.addListener(onChange(() -> this.game.setScreen(new LoadingScreen(this.game))));
+        btnSettings.addListener(onChange(() -> SettingsScreen.open((DungeonBound) this.game, () -> this.game.setScreen(new StartMenuScreen(this.game)))));
+        btnBestiary.addListener(onChange(() -> this.game.setScreen(new WikiMenuScreen(this.game))));
+        btnLogout.addListener(onChange(() -> this.game.setScreen(new LoginScreen(this.game))));
 
         Table menu = new Table();
         menu.top();
         menu.add(logo).size(LOGO_W, LOGO_H).padTop(30f).row();
-        menu.add(btn_start).size(BTN_W, BTN_H).padTop(30f).row();
-        menu.add(btn_bestiary).size(BTN_W, BTN_H).padTop(16f).row();
-        menu.add(btn_settings).size(BTN_W, BTN_H).padTop(16f).row();
-        menu.add(btn_logout).size(BTN_W, BTN_H).padTop(16f).row();
+        menu.add(btnStart).size(BTN_W, BTN_H).padTop(30f).row();
+        menu.add(btnBestiary).size(BTN_W, BTN_H).padTop(16f).row();
+        menu.add(btnSettings).size(BTN_W, BTN_H).padTop(16f).row();
+        menu.add(btnLogout).size(BTN_W, BTN_H).padTop(16f).row();
 
         Table root = new Table();
         root.setFillParent(true);
