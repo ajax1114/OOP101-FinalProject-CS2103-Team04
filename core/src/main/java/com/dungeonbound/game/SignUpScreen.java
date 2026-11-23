@@ -176,14 +176,14 @@ public class SignUpScreen implements Screen {
         signUpStyle.disabled = tint(0.1f, 0.1f, 0.1f, 1f);
 
         // --- grp_background
-        img_background = new Image(image("ui/img_background.png"));
+        img_background = new Image(image("ui/bg_menu.png"));
         img_background.setName("img_background");
         img_background.setScaling(Scaling.fill);
         img_background.setFillParent(true);
         stage.addActor(img_background);
 
         // --- grp_header
-        img_logo = new Image(image("ui/img_logo.png"));
+        img_logo = new Image(image("ui/logo_title.png"));
         img_logo.setName("img_logo");
         img_logo.setScaling(Scaling.fit);
         grp_header = new Table();
