@@ -298,7 +298,8 @@ public class TitleScreen implements Screen {
             }
         });
         // Balanced ambience volume para hindi muffled at hindi magkaroon ng phase cancellation sa BGM
-        AudioManager.getInstance().playAmbience("audio/ambience_crickets.wav", true, 0.18f);
+        String ambPath = Gdx.files.internal("audio/amb_crickets.wav").exists() ? "audio/amb_crickets.wav" : "audio/ambience_crickets.wav";
+        AudioManager.getInstance().playAmbience(ambPath, true, 0.18f);
     }
 
     @Override public void render(float delta) {

@@ -44,8 +44,8 @@ public class StartMenuScreen implements Screen {
 
         // ---- assets (galing sa assets/ui at assets/fonts)
         Texture white = load("ui/white.png", Texture.TextureFilter.Nearest);
-        Texture bgTex = load("ui/img_background.png", Texture.TextureFilter.Linear);
-        Texture logoTex = load("ui/img_logo.png", Texture.TextureFilter.Linear);
+        Texture bgTex = load("ui/bg_menu.png", Texture.TextureFilter.Linear);
+        Texture logoTex = load("ui/logo_title.png", Texture.TextureFilter.Linear);
         skin.add("white", white, Texture.class);
 
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font_body.ttf"));

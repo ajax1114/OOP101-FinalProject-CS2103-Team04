@@ -98,8 +98,8 @@
       "over": "bg_iconOver",
       "down": "bg_iconDown",
       "disabled": "bg_icon",
-      "imageUp": "img_eyeClosed",
-      "imageChecked": "img_eyeOpen"
+      "imageUp": "icon_eye_closed",
+      "imageChecked": "icon_eye_open"
     }
   },
 

@@ -51,8 +51,8 @@ public class LoginScreen implements Screen {
     private static final float LOGO_H = 251f;
 
     private static final String[] UI_IMAGES = {
-        "white", "img_background", "img_logo", "img_iconUsername",
-        "img_iconPassword", "img_eyeOpen", "img_eyeClosed"
+        "white", "bg_menu", "logo_title", "icon_username",
+        "icon_password", "icon_eye_open", "icon_eye_closed"
     };
 
     private final Game game;
@@ -95,7 +95,7 @@ public class LoginScreen implements Screen {
         Skin s = new Skin();
         for (String n : UI_IMAGES) {
             Texture t = new Texture(Gdx.files.internal("ui/" + n + ".png"));
-            boolean big = n.equals("img_background") || n.equals("img_logo");
+            boolean big = n.equals("bg_menu") || n.equals("logo_title");
             Texture.TextureFilter f = big ? Texture.TextureFilter.Linear : Texture.TextureFilter.Nearest;
             t.setFilter(f, f);
             textures.add(t);
@@ -130,13 +130,13 @@ public class LoginScreen implements Screen {
     // -------------------------------------------------------------------- UI
 
     private void buildUi() {
-        img_background = new Image(skin.getDrawable("img_background"));
+        img_background = new Image(skin.getDrawable("bg_menu"));
         img_background.setName("img_background");
         img_background.setScaling(Scaling.fill);
         img_background.setFillParent(true);
         stage.addActor(img_background);
 
-        img_logo = new Image(skin.getDrawable("img_logo"));
+        img_logo = new Image(skin.getDrawable("logo_title"));
         img_logo.setName("img_logo");
         img_logo.setScaling(Scaling.fit);
         grp_header = new Table();
@@ -150,9 +150,9 @@ public class LoginScreen implements Screen {
         if (cursor instanceof BaseDrawable) ((BaseDrawable) cursor).setMinWidth(2f);
         fieldStyle.cursor = cursor;
 
-        img_iconUsername = new Image(skin.getDrawable("img_iconUsername"));
+        img_iconUsername = new Image(skin.getDrawable("icon_username"));
         img_iconUsername.setName("img_iconUsername");
-        img_iconPassword = new Image(skin.getDrawable("img_iconPassword"));
+        img_iconPassword = new Image(skin.getDrawable("icon_password"));
         img_iconPassword.setName("img_iconPassword");
         bg_iconUsername = iconBox("bg_iconUsername", img_iconUsername);
         bg_iconPassword = iconBox("bg_iconPassword", img_iconPassword);
