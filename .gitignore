@@ -175,6 +175,15 @@ Thumbs.db
 /assets/dev/
 /scratch/
 
+# Compressed archives and screen recordings (prevent repository bloat)
+*.zip
+*.rar
+*.7z
+*.tar.gz
+*.mp4
+*.mov
+*.avi
+
 # User data, logs, and local save files
 *.db
 *.sqlite
