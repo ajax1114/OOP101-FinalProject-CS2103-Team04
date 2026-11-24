@@ -225,6 +225,18 @@ public class AudioManager {
         }
     }
 
+    public void playBtnSelect() {
+        playSfx("audio/sfx_btn_select.ogg", 0.7f);
+    }
+
+    public void playBtnDeselect() {
+        playSfx("audio/sfx_btn_deselect.ogg", 0.6f);
+    }
+
+    public void playBtnHover() {
+        playSfx("audio/sfx_btn_hover.ogg", 0.5f);
+    }
+
     // ----------------------------------------------------------------- Update
 
     /**

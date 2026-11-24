@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -85,10 +87,30 @@ public class StartMenuScreen implements Screen {
         TextButton btnSettings = new TextButton(Strings.menuSettings(), menuStyle);
         TextButton btnExit = new TextButton(Strings.menuExit(), menuStyle);
 
-        btnStart.addListener(onChange(() -> this.game.setScreen(new LoadingScreen(this.game))));
-        btnBestiary.addListener(onChange(() -> this.game.setScreen(new WikiMenuScreen(this.game))));
-        btnSettings.addListener(onChange(() -> SettingsScreen.open((DungeonBound) this.game, () -> this.game.setScreen(new StartMenuScreen(this.game)))));
-        btnExit.addListener(onChange(() -> Gdx.app.exit()));
+        btnStart.addListener(onChange(() -> {
+            AudioManager.getInstance().playBtnSelect();
+            this.game.setScreen(new LoadingScreen(this.game));
+        }));
+        btnBestiary.addListener(onChange(() -> {
+            AudioManager.getInstance().playBtnSelect();
+            this.game.setScreen(new WikiMenuScreen(this.game));
+        }));
+        btnSettings.addListener(onChange(() -> {
+            AudioManager.getInstance().playBtnSelect();
+            SettingsScreen.open((DungeonBound) this.game, () -> {
+                AudioManager.getInstance().playBtnDeselect();
+                this.game.setScreen(new StartMenuScreen(this.game));
+            });
+        }));
+        btnExit.addListener(onChange(() -> {
+            AudioManager.getInstance().playBtnSelect();
+            Gdx.app.exit();
+        }));
+
+        btnStart.addListener(onHover(() -> AudioManager.getInstance().playBtnHover()));
+        btnBestiary.addListener(onHover(() -> AudioManager.getInstance().playBtnHover()));
+        btnSettings.addListener(onHover(() -> AudioManager.getInstance().playBtnHover()));
+        btnExit.addListener(onHover(() -> AudioManager.getInstance().playBtnHover()));
 
         Table menu = new Table();
         menu.top();
@@ -127,6 +149,17 @@ public class StartMenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 r.run();
+            }
+        };
+    }
+
+    private static ClickListener onHover(final Runnable r) {
+        return new ClickListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                if (pointer == -1) { // hover mouse cursor, hindi touch drag
+                    r.run();
+                }
             }
         };
     }
