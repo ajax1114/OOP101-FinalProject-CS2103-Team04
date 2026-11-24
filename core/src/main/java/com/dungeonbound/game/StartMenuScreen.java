@@ -83,12 +83,12 @@ public class StartMenuScreen implements Screen {
         TextButton btnStart = new TextButton(Strings.menuPlay(), menuStyle);
         TextButton btnBestiary = new TextButton(Strings.menuBestiary(), menuStyle);
         TextButton btnSettings = new TextButton(Strings.menuSettings(), menuStyle);
-        TextButton btnLogout = new TextButton(Strings.menuLogout(), menuStyle);
+        TextButton btnExit = new TextButton(Strings.menuExit(), menuStyle);
 
         btnStart.addListener(onChange(() -> this.game.setScreen(new LoadingScreen(this.game))));
-        btnSettings.addListener(onChange(() -> SettingsScreen.open((DungeonBound) this.game, () -> this.game.setScreen(new StartMenuScreen(this.game)))));
         btnBestiary.addListener(onChange(() -> this.game.setScreen(new WikiMenuScreen(this.game))));
-        btnLogout.addListener(onChange(() -> this.game.setScreen(new LoginScreen(this.game))));
+        btnSettings.addListener(onChange(() -> SettingsScreen.open((DungeonBound) this.game, () -> this.game.setScreen(new StartMenuScreen(this.game)))));
+        btnExit.addListener(onChange(() -> Gdx.app.exit()));
 
         Table menu = new Table();
         menu.top();
@@ -96,7 +96,7 @@ public class StartMenuScreen implements Screen {
         menu.add(btnStart).size(BTN_W, BTN_H).padTop(30f).row();
         menu.add(btnBestiary).size(BTN_W, BTN_H).padTop(16f).row();
         menu.add(btnSettings).size(BTN_W, BTN_H).padTop(16f).row();
-        menu.add(btnLogout).size(BTN_W, BTN_H).padTop(16f).row();
+        menu.add(btnExit).size(BTN_W, BTN_H).padTop(16f).row();
 
         Table root = new Table();
         root.setFillParent(true);

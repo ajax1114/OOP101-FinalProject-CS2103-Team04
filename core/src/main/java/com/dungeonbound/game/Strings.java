@@ -93,6 +93,10 @@ public final class Strings {
         return Lang.isTL() ? "MAG-LOGOUT" : "LOGOUT";
     }
 
+    public static String menuExit() {
+        return Lang.isTL() ? "LUMABAS" : "EXIT";
+    }
+
     // 5. Lore Screen
     public static String btnBack() {
         return Lang.isTL() ? "BUMALIK" : "BACK";
