@@ -203,13 +203,9 @@ public class LoadingScreen implements Screen {
 
     private void goToGame() {
         try {
-            Gdx.app.log("LoadingScreen", "1. lilipat na");
-            // TEST MODE (wala pang GameScreen): balik sa menu
-            game.setScreen(new StartMenuScreen(game));
-            assets.dispose(); // walang gagamit nito sa test mode
-            // KAPAG MAY GameScreen NA, palitan ang 3 linya sa itaas ng:
-            // game.setScreen(new GameScreen(game, assets));
-            Gdx.app.log("LoadingScreen", "2. nakalipat na");
+            Gdx.app.log("LoadingScreen", "1. lilipat na sa GameScreen");
+            game.setScreen(new GameScreen(game, assets));
+            Gdx.app.log("LoadingScreen", "2. nakalipat na sa GameScreen");
             dispose();
             Gdx.app.log("LoadingScreen", "3. tapos dispose");
         } catch (Throwable t) {
