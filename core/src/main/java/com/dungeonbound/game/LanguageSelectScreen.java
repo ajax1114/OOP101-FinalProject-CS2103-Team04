@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.function.Consumer;
 
-/** Dalawang magkahiwalay na board: tanong sa taas (may fleur), mga pagpipilian sa ibaba. */
+/** Dalawang magkahiwalay na board: sa taas (may fleur), mga pagpipilian sa ibaba. */
 public final class LanguageSelectScreen extends ScreenAdapter {
     private static final int BH = 127;
     private static final int B1X = 170, B1Y = 53, B1W = 300;

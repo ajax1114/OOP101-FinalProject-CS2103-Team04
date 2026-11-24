@@ -46,14 +46,18 @@ public class DungeonBound extends Game {
         }
     }
 
-    // Free the previous screen's resources on every screen change.
-    @Override
-    public void setScreen(Screen screen) {
+    // Free the previous screen's resources on every screen change, unless disposeOld is false.
+    public void setScreen(Screen screen, boolean disposeOld) {
         Screen old = getScreen();
         super.setScreen(screen);
-        if (old != null) {
+        if (old != null && disposeOld && old != screen) {
             Gdx.app.postRunnable(old::dispose); // after the frame, so an active transition can't crash
         }
+    }
+
+    @Override
+    public void setScreen(Screen screen) {
+        setScreen(screen, true);
     }
 
     @Override
