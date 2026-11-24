@@ -217,12 +217,16 @@ public class LoreScreen implements Screen {
         backLbl.addAction(Actions.sequence(Actions.delay(0.5f), Actions.fadeIn(0.3f)));
     }
 
-    private void back() { goTo(new WikiMenuScreen(game, index)); }
+    private void back() {
+        AudioManager.getInstance().playBtnDeselect();
+        goTo(new WikiMenuScreen(game, index));
+    }
 
     /** Lipat sa kalapit na unlocked na creature (walang wrap). */
     private void browse(int dir) {
         for (int i = index + dir; i >= 0 && i < WikiCreature.ALL.size(); i += dir) {
             if (WikiProgress.isUnlocked(WikiCreature.ALL.get(i).id)) {
+                AudioManager.getInstance().playWikiCardHover();
                 goTo(new LoreScreen(game, i));
                 return;
             }

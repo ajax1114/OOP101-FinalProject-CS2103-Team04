@@ -83,6 +83,7 @@ public class WikiMenuScreen implements Screen {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 if (GameControls.is(GameControls.Action.BACK, keycode)) {
+                    AudioManager.getInstance().playBtnDeselect();
                     goTo(new StartMenuScreen(game));
                     return true;
                 }
@@ -121,13 +122,17 @@ public class WikiMenuScreen implements Screen {
                 // mouseMoved (hindi enter) para hindi maagaw ng nakatigil na mouse ang keyboard focus
                 @Override
                 public boolean mouseMoved(InputEvent event, float x, float y) {
-                    focus = idx;
+                    if (focus != idx) {
+                        focus = idx;
+                        AudioManager.getInstance().playWikiCardHover();
+                    }
                     return false;
                 }
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     focus = idx;
                     if (!unlocked[idx]) {
+                        AudioManager.getInstance().playBtnDeselect();
                         // TEST: double click sa locked card = i-unlock
                         long now = TimeUtils.millis();
                         Gdx.app.log("Wiki", "click locked card " + idx + " (debug=" + DEBUG_DOUBLE_CLICK_UNLOCK + ")");
@@ -166,23 +171,33 @@ public class WikiMenuScreen implements Screen {
 
     /** Keyboard: galaw ng focus; sumusunod ang window. */
     private void moveFocus(int dir) {
+        int oldFocus = focus;
         focus = MathUtils.clamp(focus + dir, 0, count - 1);
+        if (focus != oldFocus) {
+            AudioManager.getInstance().playWikiCardHover();
+        }
         if (focus < target) target = focus;
         else if (focus > target + VISIBLE - 1) target = focus - (VISIBLE - 1);
     }
 
     /** Arrow buttons / mouse wheel: isang card ang usad ng window. */
     private void scrollWindow(int dir) {
+        int oldTarget = target;
         target = MathUtils.clamp(target + dir, 0, maxTarget);
         focus = Math.min(MathUtils.clamp(focus, target, target + VISIBLE - 1), count - 1);
+        if (target != oldTarget) {
+            AudioManager.getInstance().playWikiCardHover();
+        }
     }
 
     private void open(int idx) {
         if (idx < 0 || idx >= count) return;
         if (!unlocked[idx]) {
+            AudioManager.getInstance().playBtnDeselect();
             if (DEBUG_DOUBLE_CLICK_UNLOCK) debugUnlock(idx); // TEST: Enter sa locked card = i-unlock
             return;
         }
+        AudioManager.getInstance().playWikiCardSelect();
         goTo(new LoreScreen(game, idx));
     }
 

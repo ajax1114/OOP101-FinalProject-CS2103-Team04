@@ -41,7 +41,7 @@ public class LoadingScreen implements Screen {
     private static final float FIT_H = 700f;
     private static final float MAX_SCALE = 1.6f;
 
-    private static final float MIN_SHOW_TIME = 1.2f;    // para hindi mag-flash kapag mabilis ang load
+    private static final float MIN_SHOW_TIME = 4.0f;    // 4.0s para sa buong mystical audio swell at GPU map warmup
     private static final float SPIN_STEP     = 1f / 12f; // 12 tuldok, 1 step = 30 degrees
 
     private final Game game;

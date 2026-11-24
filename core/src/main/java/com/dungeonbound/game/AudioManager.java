@@ -237,6 +237,22 @@ public class AudioManager {
         playSfx("audio/sfx_btn_hover.ogg", 0.5f);
     }
 
+    public void playSettingsClick() {
+        playSfx("audio/sfx_settings_click.ogg", 0.7f);
+    }
+
+    public void playSettingsHover() {
+        playSfx("audio/sfx_settings_hover.ogg", 0.45f);
+    }
+
+    public void playWikiCardHover() {
+        playSfx("audio/sfx_wiki_card_hover.ogg", 0.6f);
+    }
+
+    public void playWikiCardSelect() {
+        playSfx("audio/sfx_wiki_card_select.ogg", 0.75f);
+    }
+
     // ----------------------------------------------------------------- Update
 
     /**
