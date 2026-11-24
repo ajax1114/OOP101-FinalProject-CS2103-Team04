@@ -75,6 +75,39 @@ Next labyrinth    Final boss
 
 ---
 
+## 🚀 How to Run the Game (Paano Patakbuhin)
+
+### System Requirements
+- **Java Development Kit (JDK):** Version 17 or higher
+- **Operating System:** Windows, macOS, or Linux
+
+### Quick Start
+Clone the repository and run the desktop application using the included Gradle wrapper:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/neonekiii/OOP101-FinalProject-CS2103-Team04.git
+cd OOP101-FinalProject-CS2103-Team04
+
+# 2. Run the game
+# On Windows (PowerShell / Command Prompt / Git Bash):
+.\gradlew.bat lwjgl3:run
+
+# On macOS / Linux:
+./gradlew lwjgl3:run
+```
+
+### Controls (Mga Kontrol sa Laro)
+
+| Action | Keyboard | Mouse / Touch |
+|---|---|---|
+| **Movement (Galaw)** | `W`, `A`, `S`, `D` or `Arrow Keys` | On-screen Joystick (bottom-left) |
+| **Attack (Atake)** | `SPACE` bar (Sword swing) | Screen / Space |
+| **Pause / Menu** | `ESC` key | In-game buttons |
+| **Navigate Menus** | `W`/`S` or `Up`/`Down`, `Enter` | Mouse Hover / Click |
+
+---
+
 ## OOP Concepts
 
 | Concept | Where it applies |
