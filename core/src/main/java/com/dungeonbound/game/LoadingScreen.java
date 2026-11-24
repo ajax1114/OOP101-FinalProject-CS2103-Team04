@@ -144,6 +144,10 @@ public class LoadingScreen implements Screen {
         Gdx.input.setInputProcessor(null);
         stage.getRoot().getColor().a = 0f;
         stage.getRoot().addAction(Actions.fadeIn(0.3f));
+
+        // Fade out menu music and play mystical loading sound
+        AudioManager.getInstance().fadeOutMusic(0.5f);
+        AudioManager.getInstance().playSfx("audio/sfx_loading.ogg", 0.75f);
     }
 
     @Override
