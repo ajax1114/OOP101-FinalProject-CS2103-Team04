@@ -1,0 +1,90 @@
+
+packed_wakwak.png
+size: 1024, 128
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+000
+  rotate: false
+  xy: 2, 2
+  size: 180, 100
+  orig: 180, 100
+  offset: 0, 0
+  index: -1
+001
+  rotate: false
+  xy: 184, 2
+  size: 180, 100
+  orig: 180, 100
+  offset: 0, 0
+  index: -1
+003
+  rotate: false
+  xy: 184, 2
+  size: 180, 100
+  orig: 180, 100
+  offset: 0, 0
+  index: -1
+002
+  rotate: false
+  xy: 366, 2
+  size: 180, 100
+  orig: 180, 100
+  offset: 0, 0
+  index: -1
+wakwak_f12
+  rotate: false
+  xy: 862, 57
+  size: 155, 45
+  orig: 155, 45
+  offset: 0, 0
+  index: -1
+wakwak_f13
+  rotate: false
+  xy: 862, 57
+  size: 155, 45
+  orig: 155, 45
+  offset: 0, 0
+  index: -1
+wakwak_f6
+  rotate: false
+  xy: 705, 57
+  size: 155, 45
+  orig: 155, 45
+  offset: 0, 0
+  index: -1
+wakwak_f10
+  rotate: false
+  xy: 705, 57
+  size: 155, 45
+  orig: 155, 45
+  offset: 0, 0
+  index: -1
+wakwak_f11
+  rotate: false
+  xy: 705, 57
+  size: 155, 45
+  orig: 155, 45
+  offset: 0, 0
+  index: -1
+wakwak_f7
+  rotate: false
+  xy: 705, 57
+  size: 155, 45
+  orig: 155, 45
+  offset: 0, 0
+  index: -1
+wakwak_f8
+  rotate: false
+  xy: 548, 42
+  size: 155, 60
+  orig: 155, 60
+  offset: 0, 0
+  index: -1
+wakwak_f9
+  rotate: false
+  xy: 548, 42
+  size: 155, 60
+  orig: 155, 60
+  offset: 0, 0
+  index: -1
