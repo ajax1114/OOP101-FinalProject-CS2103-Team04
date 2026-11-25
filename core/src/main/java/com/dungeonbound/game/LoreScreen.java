@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
@@ -67,6 +68,7 @@ public class LoreScreen implements Screen {
     private final Game game;
     private final int index;
     private final Stage stage = new Stage(new FitViewport(W, H));
+    private TextureAtlas atlas;
     private final List<Texture> textures = new ArrayList<>();
     private final List<BitmapFont> fonts = new ArrayList<>();
     private boolean disposed;
@@ -92,6 +94,8 @@ public class LoreScreen implements Screen {
             }
         });
 
+        atlas = new TextureAtlas(Gdx.files.internal("wiki/wiki.atlas"));
+
         // 1. Background (solid, kulay ng creature)
         Image bg = new Image(solid(c.bg));
         bg.setSize(W, H);
@@ -101,19 +105,17 @@ public class LoreScreen implements Screen {
         Group left = new Group();
         left.setTouchable(Touchable.disabled);
 
-        Texture blurTex = new Texture(Gdx.files.internal(c.blurFile), true);
-        blurTex.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
-        textures.add(blurTex);
+        TextureRegion blurRegion = atlas.findRegion(c.blurRegion);
         float cardH = CARD_H;
-        float cardW = cardH * blurTex.getWidth() / blurTex.getHeight();
+        float cardW = cardH * blurRegion.getRegionWidth() / (float) blurRegion.getRegionHeight();
         float cardX = CARD_CX - cardW / 2f, cardY = CARD_CY - cardH / 2f;
-        Image blurCard = new Image(blurTex);
+        Image blurCard = new Image(blurRegion);
         blurCard.setSize(cardW, cardH);
         blurCard.setPosition(cardX, cardY);
         left.addActor(blurCard);
 
         // paa ng enemy ay nasa ibabang bahagi ng frame sa blurred card
-        AnimatedImage enemy = new AnimatedImage(loadAnimation(c.animFile));
+        AnimatedImage enemy = new AnimatedImage(loadAnimation(c.animRegion));
         enemy.setSize(SPRITE_SIZE, SPRITE_SIZE);
         enemy.setPosition(CARD_CX - SPRITE_SIZE / 2f, SPRITE_FEET_Y - SPRITE_SIZE * 0.08f);
         left.addActor(enemy);
@@ -240,15 +242,12 @@ public class LoreScreen implements Screen {
 
     // ---------- Assets ----------
 
-    /** Hinihiwa ang horizontal spritesheet (FRAME_COUNT x FRAME_SIZE) at ginagawang looping animation. */
-    private Animation<TextureRegion> loadAnimation(String file) {
-        Texture t = new Texture(Gdx.files.internal(file));
-        t.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest); // pixel art
-        textures.add(t);
-        TextureRegion[] frames = new TextureRegion[WikiCreature.FRAME_COUNT];
-        for (int i = 0; i < frames.length; i++) {
-            frames[i] = new TextureRegion(t, i * WikiCreature.FRAME_SIZE, 0,
-                WikiCreature.FRAME_SIZE, WikiCreature.FRAME_SIZE);
+    /** Nilo-load ang mga naka-pack na frames mula sa TextureAtlas at ginagawang looping animation. */
+    private Animation<TextureRegion> loadAnimation(String animRegion) {
+        com.badlogic.gdx.utils.Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions(animRegion);
+        TextureRegion[] frames = new TextureRegion[regions.size];
+        for (int i = 0; i < regions.size; i++) {
+            frames[i] = regions.get(i);
         }
         Animation<TextureRegion> anim = new Animation<TextureRegion>(FRAME_TIME, frames);
         anim.setPlayMode(Animation.PlayMode.LOOP);
@@ -401,6 +400,7 @@ public class LoreScreen implements Screen {
         if (disposed) return;
         disposed = true;
         stage.dispose();
+        if (atlas != null) atlas.dispose();
         for (Texture t : textures) t.dispose();
         for (BitmapFont f : fonts) f.dispose();
     }

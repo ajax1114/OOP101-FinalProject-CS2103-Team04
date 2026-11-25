@@ -129,3 +129,14 @@ cd OOP101-FinalProject-CS2103-Team04
 | **Charmaine T. Argona** ([@eniaxen](https://github.com/eniaxen)) | Character Designer, Repository Manager, Programmer, Documentor |
 | **Dhymple Norshe F. Carandang** ([@ajax1114](https://github.com/ajax1114)) | Enemy Designer, 2D Background Artist, Programmer, Documentor |
 | **Phoebe Leonides M. Dolor** ([@neonekiii](https://github.com/neonekiii)) | GUI & Item Designer, Programmer, Documentor |
+
+---
+
+## 🛡️ Intellectual Property & Assets Notice
+
+All original pixel art, character animations, folklore monster cards, UI layouts, and audio design in this repository were created specifically for **DungeonBound** (OOP101 Final Project, CS2103 Team 04).
+- **GUI, Item Designs, Wiki Cards & Sound Effects:** Created and owned by **Phoebe Leonides M. Dolor** ([@neonekiii](https://github.com/neonekiii)).
+- **Character Designs:** Created and owned by **Charmaine T. Argona** ([@eniaxen](https://github.com/eniaxen)).
+- **Enemy Designs & 2D Backgrounds:** Created and owned by **Dhymple Norshe F. Carandang** ([@ajax1114](https://github.com/ajax1114)).
+
+> **Notice:** All rights reserved. Unauthorized reproduction, extraction, redistribution, or reuse of these creative assets in other academic submissions or third-party projects without explicit permission from the authors is strictly prohibited.
