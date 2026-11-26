@@ -25,30 +25,28 @@ allprojects {
   }
 }
 
+// From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
+// The article can be helpful when using assets.txt in your project.
+tasks.register('generateAssetList') {
+  File assetsFolder = new File("${project.rootDir}/assets/")
+  File assetsFile = new File(assetsFolder, "assets.txt")
+  inputs.files(fileTree(assetsFolder) { exclude 'assets.txt' })
+  outputs.file(assetsFile)
+
+  doLast {
+    def paths = fileTree(assetsFolder) { exclude 'assets.txt' }
+      .collect { assetsFolder.relativePath(it) }
+      .sort()
+    assetsFile.text = paths.join("\n") + (paths ? "\n" : "")
+  }
+}
+
 configure(subprojects) {
   apply plugin: 'java-library'
   java.sourceCompatibility = 17
   java.targetCompatibility = 17
 
-  // From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
-  // The article can be helpful when using assets.txt in your project.
-  tasks.register('generateAssetList') {
-    inputs.dir("${project.rootDir}/assets/")
-    // projectFolder/assets
-    File assetsFolder = new File("${project.rootDir}/assets/")
-    // projectFolder/assets/assets.txt
-    File assetsFile = new File(assetsFolder, "assets.txt")
-    // delete that file in case we've already created it
-    assetsFile.delete()
-
-    // iterate through all files inside that folder
-    // convert it to a relative path
-    // and append it to the file assets.txt
-    fileTree(assetsFolder).collect { assetsFolder.relativePath(it) }.sort().each {
-      assetsFile.append(it + "\n")
-    }
-  }
-  processResources.dependsOn 'generateAssetList'
+  processResources.dependsOn rootProject.tasks.named('generateAssetList')
 
   compileJava {
     options.incremental = true

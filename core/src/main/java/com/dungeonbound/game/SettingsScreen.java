@@ -44,11 +44,11 @@ public final class SettingsScreen extends ScreenAdapter {
     // ---- layout (640x360, y pababa)
     private static final int BX = 40, BY = 36, BW = 560, BH = 314;              // malaking board (BY=36 para litaw ang fleur sa taas)
     private static final int TAB_X = 62, TAB_Y = 92, TAB_W = 128, TAB_H = 28, TAB_STEP = 33;
-    private static final int BACK_Y = 260;
+    private static final int BACK_Y = 292;
     private static final int PX = 204, PY = 90, PW = 374, PH = 246;              // content panel
     private static final int ROW_X = PX + 14, ROW_W = PW - 28, ROW_H = 30, ROW_STEP = 35, ROW_Y0 = 134;
     private static final int TRACK_X = ROW_X + 150, TRACK_W = 130;               // slider
-    private static final int TAB_COUNT = 4, LEFT_COUNT = 5;                      // 4 tab + Back
+    private static final int TAB_COUNT = 5, LEFT_COUNT = 6;                      // 5 tab + Back
 
     private static final Color[] SHADOW = {
             Color.valueOf("462104"), Color.valueOf("3f2214"), Color.valueOf("5e4133")
@@ -131,9 +131,6 @@ public final class SettingsScreen extends ScreenAdapter {
         @Override float slider() { return get(); }
         @Override void adjust(int dir) {
             set(MathUtils.clamp(Math.round(get() * 10f) / 10f + dir * 0.1f, 0f, 1f));
-
-            if (kind == 2) AudioManager.getInstance().playSfx("audio/sfx_whoosh.wav", 0.5f);
-
         }
         @Override void setSlider(float v) { set(MathUtils.clamp(Math.round(v * 20f) / 20f, 0f, 1f)); }
     }
@@ -191,7 +188,44 @@ public final class SettingsScreen extends ScreenAdapter {
         au.add(new VolumeRow(2, "Epekto (SFX)", "Effects (SFX)"));
         rows.add(au);
 
-        // 3: Language
+        // 3: Display
+        List<Row> dp = new ArrayList<>();
+        dp.add(new Row() {
+            @Override String label() { return text("Buong Screen", "Fullscreen"); }
+            @Override boolean checked() { return game.getDisplayMode() == DungeonBound.DisplayModeOption.FULLSCREEN; }
+            @Override void activate() { game.changeDisplayModeWithLoading(DungeonBound.DisplayModeOption.FULLSCREEN, SettingsScreen.this); }
+        });
+        dp.add(new Row() {
+            @Override String label() { return "Windowed"; }
+            @Override boolean checked() { return game.getDisplayMode() == DungeonBound.DisplayModeOption.WINDOWED; }
+            @Override void activate() { game.changeDisplayModeWithLoading(DungeonBound.DisplayModeOption.WINDOWED, SettingsScreen.this); }
+        });
+        dp.add(new Row() {
+            @Override String label() { return text("Resolusyon (Windowed)", "Resolution (Windowed)"); }
+            @Override String value() {
+                int[] res = DungeonBound.WINDOW_RESOLUTIONS[game.getWindowResolutionIndex()];
+                return res[0] + "x" + res[1];
+            }
+            @Override void adjust(int dir) {
+                int next = (game.getWindowResolutionIndex() + dir + DungeonBound.WINDOW_RESOLUTIONS.length) % DungeonBound.WINDOW_RESOLUTIONS.length;
+                game.changeWindowResolutionWithLoading(next, SettingsScreen.this);
+            }
+            @Override void activate() {
+                int next = (game.getWindowResolutionIndex() + 1) % DungeonBound.WINDOW_RESOLUTIONS.length;
+                game.changeWindowResolutionWithLoading(next, SettingsScreen.this);
+            }
+        });
+        dp.add(new Row() {
+            @Override String label() { return "VSync"; }
+            @Override String value() {
+                return game.isVsyncEnabled() ? text("Naka-on", "On") : text("Naka-off", "Off");
+            }
+            @Override void adjust(int dir) { game.toggleVsync(); }
+            @Override void activate() { game.toggleVsync(); }
+        });
+        rows.add(dp);
+
+        // 4: Language
         List<Row> lg = new ArrayList<>();
         lg.add(new LangRow(Lang.TL, "Tagalog"));
         lg.add(new LangRow(Lang.EN, "English"));
@@ -209,7 +243,6 @@ public final class SettingsScreen extends ScreenAdapter {
 
     private void move(int d) {
         if (!inContent) {
-
             int old = leftSel;
             leftSel = (leftSel + d + LEFT_COUNT) % LEFT_COUNT;
             if (leftSel < TAB_COUNT) { tab = leftSel; row = 0; }
@@ -219,18 +252,10 @@ public final class SettingsScreen extends ScreenAdapter {
             int old = row;
             row = (row + d + n) % n;
             if (old != row) AudioManager.getInstance().playSettingsHover();
-
-            leftSel = (leftSel + d + LEFT_COUNT) % LEFT_COUNT;
-            if (leftSel < TAB_COUNT) { tab = leftSel; row = 0; }
-        } else {
-            int n = curRows().size();
-            row = (row + d + n) % n;
-
         }
     }
 
     private void enterContent() {
-
         if (leftSel < TAB_COUNT) {
             inContent = true;
             row = 0;
@@ -242,12 +267,6 @@ public final class SettingsScreen extends ScreenAdapter {
         inContent = false;
         AudioManager.getInstance().playBtnDeselect();
     }
-
-        if (leftSel < TAB_COUNT) { inContent = true; row = 0; }
-    }
-
-    private void leaveContent() { inContent = false; }
-
 
     private static boolean isUp(int k) { return k == Input.Keys.UP || k == Input.Keys.W; }
     private static boolean isDown(int k) { return k == Input.Keys.DOWN || k == Input.Keys.S; }
@@ -305,58 +324,41 @@ public final class SettingsScreen extends ScreenAdapter {
             if (isUp(k)) { move(-1); return true; }
             if (isDown(k)) { move(1); return true; }
             if (isRight(k)) {
-
                 if (!inContent) enterContent();
                 else {
                     curRows().get(row).adjust(1);
                     AudioManager.getInstance().playSettingsClick();
                 }
-
-                if (!inContent) enterContent(); else curRows().get(row).adjust(1);
-
                 return true;
             }
             if (isLeft(k)) {
                 if (inContent) {
                     Row r = curRows().get(row);
-
                     if (r.slider() >= 0f) {
                         r.adjust(-1);
                         AudioManager.getInstance().playSettingsClick();
                     } else leaveContent();
-
-                    if (r.slider() >= 0f) r.adjust(-1); else leaveContent();
-
                 }
                 return true;
             }
             if (isSelect(k)) {
                 if (!inContent) {
-
                     if (leftSel == TAB_COUNT) {
                         AudioManager.getInstance().playBtnDeselect();
                         onBack.run();
                     } else enterContent();
                 } else {
                     AudioManager.getInstance().playSettingsClick();
-=======
-                    if (leftSel == TAB_COUNT) onBack.run(); else enterContent();
-                } else {
-
                     curRows().get(row).activate();
                 }
                 return true;
             }
             if (isBack(k)) {
-
                 if (inContent) leaveContent();
                 else {
                     AudioManager.getInstance().playBtnDeselect();
                     onBack.run();
                 }
-=======
-                if (inContent) leaveContent(); else onBack.run();
-
                 return true;
             }
             return false;
@@ -368,19 +370,15 @@ public final class SettingsScreen extends ScreenAdapter {
             Vector2 p = toUi(sx, sy);
             int l = leftHit(p.x, p.y);
             if (l >= 0) {
-
                 if (inContent || leftSel != l) {
                     AudioManager.getInstance().playSettingsHover();
                 }
-
-
                 leftSel = l;
                 if (l < TAB_COUNT) { tab = l; row = 0; }
                 inContent = false;
                 return true;
             }
             int r = rowHit(p.x, p.y);
-
             if (r >= 0) {
                 if (!inContent || row != r) {
                     AudioManager.getInstance().playSettingsHover();
@@ -389,9 +387,6 @@ public final class SettingsScreen extends ScreenAdapter {
                 row = r;
                 return true;
             }
-=======
-            if (r >= 0) { inContent = true; row = r; return true; }
-
             return false;
         }
 
@@ -403,7 +398,6 @@ public final class SettingsScreen extends ScreenAdapter {
             if (l >= 0) {
                 leftSel = l;
                 inContent = false;
-
                 if (l == TAB_COUNT) {
                     AudioManager.getInstance().playBtnDeselect();
                     onBack.run();
@@ -412,9 +406,6 @@ public final class SettingsScreen extends ScreenAdapter {
                     tab = l;
                     row = 0;
                 }
-
-                if (l == TAB_COUNT) onBack.run(); else { tab = l; row = 0; }
-
                 return true;
             }
             int r = rowHit(p.x, p.y);
@@ -422,9 +413,7 @@ public final class SettingsScreen extends ScreenAdapter {
                 inContent = true;
                 row = r;
                 Row rw = curRows().get(r);
-
                 AudioManager.getInstance().playSettingsClick();
-
                 if (rw.slider() >= 0f) { dragging = true; dragSlider(p.x); }
                 else rw.activate();
                 return true;
@@ -454,8 +443,7 @@ public final class SettingsScreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(input);
         AudioManager.getInstance().cancelFade();
         if (!AudioManager.getInstance().isMusicPlaying()) {
-            String bgmPath = Gdx.files.internal("audio/bgm_title.ogg").exists() ? "audio/bgm_title.ogg" : "audio/bgm_title.mp3";
-            AudioManager.getInstance().playMusic(bgmPath, true, 0.7f);
+            AudioManager.getInstance().playTitleMusic();
         }
     }
 
@@ -498,8 +486,8 @@ public final class SettingsScreen extends ScreenAdapter {
 
     private String[] tabNames() {
         return tl
-                ? new String[]{"Account", "Layout ng Laro", "Tunog", "Wika"}
-                : new String[]{"Account", "Gameplay Layout", "Audio", "Language"};
+                ? new String[]{"Account", "Layout ng Laro", "Tunog", "Screen", "Wika"}
+                : new String[]{"Account", "Gameplay Layout", "Audio", "Display", "Language"};
     }
 
     private void button(int x, int y, int w, int h, boolean on, boolean gold) {
@@ -532,6 +520,7 @@ public final class SettingsScreen extends ScreenAdapter {
                         ? text("Pindutin ang bagong key (Esc = kanselahin)", "Press a new key (Esc = cancel)")
                         : text("Layout ng kontrol", "Control layout");
             case 2: return text("Lakas ng tunog", "Volume");
+            case 3: return text("Ayos ng screen", "Display settings");
             default: return text("Wika ng laro", "Game language");
         }
     }

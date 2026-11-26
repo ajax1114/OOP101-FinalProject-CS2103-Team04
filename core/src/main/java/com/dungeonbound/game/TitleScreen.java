@@ -306,22 +306,32 @@ public class TitleScreen implements Screen {
         delta = Math.min(delta, 1f / 30f);
         clockMs += delta * 1000f;
 
-        // ---- which animation frame are we on?
+        // ---- which animation frame are we on? (plus sub-frame frac for smooth 60fps motion)
         int frame;
+        float frac = 0f;
         if (state == State.INTRO && clockMs >= introMs) state = State.IDLE;
         if (state == State.INTRO) {
             float acc = 0f; frame = idle0 - 1;
-            for (int i = 0; i < idle0; i++) { acc += frameMs[i]; if (clockMs < acc) { frame = i; break; } }
+            for (int i = 0; i < idle0; i++) {
+                if (clockMs < acc + frameMs[i]) {
+                    frame = i;
+                    frac = Math.max(0f, Math.min(1f, (clockMs - acc) / frameMs[i]));
+                    break;
+                }
+                acc += frameMs[i];
+            }
         } else {
-            frame = idle0 + ((int) ((clockMs - introMs) / 100f)) % LOOP;
+            float idleClock = (clockMs - introMs) / 100f;
+            frame = idle0 + ((int) idleClock) % LOOP;
+            frac = idleClock - (float) Math.floor(idleClock);
         }
         int tl = Math.floorMod(frame - idle0, LOOP);
+        int tlNext = (tl + 1) % LOOP;
 
-        // ---- audio cues: gamitin ang bgm_title.ogg kung meron para mas malinaw/crisp ang audio kaysa sa mp3
+        // ---- audio cues: gamitin ang bgm_title.mp3 (44.1kHz) para smooth at hindi choppy
         if (!musicOn && clockMs >= 1200f) {
             musicOn = true;
-            String bgmPath = Gdx.files.internal("audio/bgm_title.ogg").exists() ? "audio/bgm_title.ogg" : "audio/bgm_title.mp3";
-            AudioManager.getInstance().playMusic(bgmPath, true, 0.7f);
+            AudioManager.getInstance().playTitleMusic();
         }
         float kk = -1f;
         if (state == State.TRANS) {
@@ -335,9 +345,20 @@ public class TitleScreen implements Screen {
             }
         }
 
-        // ---- camera y (top of the 1920x1080 window inside the tall background, y down)
-        float camY = (frame < panStart) ? 0f : (frame <= panEnd ? panY[frame - panStart] : SKY);
-        float torchRamp = (frame < panStart) ? 0f : (frame <= panEnd ? ramp[frame - panStart] : 1f);
+        // ---- camera y & torch glow ramp (smoothly interpolated between pan frames)
+        float camY;
+        if (frame < panStart) camY = 0f;
+        else if (frame < panEnd) {
+            int idx = frame - panStart;
+            camY = panY[idx] + (panY[idx + 1] - panY[idx]) * frac;
+        } else camY = SKY;
+
+        float torchRamp;
+        if (frame < panStart) torchRamp = 0f;
+        else if (frame < panEnd) {
+            int idx = frame - panStart;
+            torchRamp = ramp[idx] + (ramp[idx + 1] - ramp[idx]) * frac;
+        } else torchRamp = 1f;
 
         // ---- transition parameters
         float focus = 0f, scale = 1f, u = 0f, fadeOut = 0f, startA = 0f, promptA = 0f;
@@ -380,22 +401,12 @@ public class TitleScreen implements Screen {
             batch.draw(focusBg, 0f, TALL_H - (SKY + H), W, H);
         }
 
-        // title (static) + animations, always visible; fades while pushing into the tunnel
-        float titleA = (kk >= 0f) ? Math.max(0f, 1f - kk / 5f) : 1f;
-        if (titleA > 0f) {
-            mode(false);
-            batch.setColor(1f, 1f, 1f, titleA);
-            batch.draw(titleTex, titleX, TALL_H - (SKY + titleY + titleH), titleW, titleH);
-            if (frame >= readStart && frame < idle0) drawAnim("ttl_highlight", frame - readStart, titleA);   // gold letter sweep
-            drawAnim("ttl_pulse", tl, titleA);                                                                // FILIPINO glow
-            drawAnim("ttl_shimmer", tl, titleA);                                                              // light sweep
-        }
-
-        // wak-wak bird (intro only, tall space)
+        // wak-wak bird (intro only, tall space, smooth flight)
         if (state == State.INTRO && frame >= 6) {
-            float bx = 500f + (frame - 6) * 78f;
+            float fCont = frame + frac;
+            float bx = 500f + (fCont - 6f) * 78f;
             if (bx <= 2100f) {
-                float by = 178f + SKY - 24f + 14f * (float) Math.sin(0.9f * frame);
+                float by = 178f + SKY - 24f + 14f * (float) Math.sin(0.9f * fCont);
                 Anim bird = anims.get("wakwak_bird");
                 Frame f = (bird == null) ? null : bird.byT[((frame / 2) % 4)];
                 if (f != null) {
@@ -406,28 +417,65 @@ public class TitleScreen implements Screen {
             }
         }
 
-        // animated layers
-        drawAnim("moon_halo_dither", tl, fx);
+        // animated background layers (moon halo, torch glow, cape, kapre)
+        drawAnim("moon_halo_dither", tl, fx * 0.75f); // Atmospheric moonlight halo (cleaned of arch bakat in atlas)
+
+        float tSec = clockMs * 0.001f;
+
+        // Torches with organic fast & slow glow dynamics
+        float fastFlickerL = 1f + 0.06f * (float) Math.sin(tSec * 13.5f) + 0.04f * (float) Math.cos(tSec * 21.0f);
+        float fastFlickerR = 1f + 0.06f * (float) Math.sin(tSec * 15.2f + 1.2f) + 0.04f * (float) Math.cos(tSec * 19.3f + 2.0f);
+
         for (Map.Entry<String, float[]> e : glowAlpha.entrySet()) {
             int[] b = glowBox.get(e.getKey());
             mode(true);
-            batch.setColor(1f, 1f, 1f, e.getValue()[tl] * torchRamp * fx);
+            float g0 = e.getValue()[tl], g1 = e.getValue()[tlNext];
+            float ga = (g0 + (g1 - g0) * frac) * torchRamp * fx;
+            String k = e.getKey();
+            float flicker = (k.contains("L")) ? fastFlickerL : fastFlickerR;
+            batch.setColor(1f, 1f, 1f, Math.min(1f, ga * flicker));
             batch.draw(glowTex.get(e.getKey()), b[0], TALL_H - (b[1] + SKY + b[3]), b[2], b[3]);
         }
-        String[] flames = {"flame_L", "flame_R", "flame_SL", "flame_SR"};
-        for (String n : flames) drawAnim(n, tl, fx);
         drawAnim("cape_sway", tl, 1f);               // cape stays sharp and visible during the blur
-        drawAnim("embers", tl, fx);
+        drawAnim("embers", tl, fx);                  // background embers
         drawAnim("kapre_cigar", tl, fx);
-        
 
-        // stars + fireflies (screen)
+        // stars + fireflies + torch embers (screen blend)
         mode(true);
+
+        // Torch embers (natural combination of fast sparks and slow floating embers)
+        if (torchRamp > 0.05f && fx > 0.05f) {
+            // Front-right torch (x ~ 1218)
+            float[] speedsR = { 0.85f, 0.42f, 0.28f, 0.65f }; // fast sparks & slow lingering embers
+            float[] heightsR = { 50f, 40f, 28f, 45f };
+            float[] sizesR = { 2.5f, 3.5f, 3.0f, 2.0f };
+            for (int i = 0; i < 4; i++) {
+                float p = (tSec * speedsR[i] + i * 0.25f) % 1f;
+                float drift = (float) Math.sin(tSec * (2.2f + i * 0.8f) + i * 1.7f) * (5f + i * 1.5f);
+                float ex = 1218f + drift;
+                float ey = (372f - p * heightsR[i]) + SKY;
+                float ea = (float) Math.sin(p * Math.PI) * 0.85f * torchRamp * fx;
+                box(ex, ey, sizesR[i], 1f, 0.75f, 0.28f, ea);
+            }
+            // Front-left torch matching embers (x ~ 654)
+            for (int i = 0; i < 3; i++) {
+                float p = (tSec * speedsR[i + 1] + i * 0.33f + 0.15f) % 1f;
+                float drift = (float) Math.sin(tSec * (2.4f + i) + i * 2.3f) * 6f;
+                float ex = 654f + drift;
+                float ey = (372f - p * heightsR[i + 1]) + SKY;
+                float ea = (float) Math.sin(p * Math.PI) * 0.85f * torchRamp * fx;
+                box(ex, ey, sizesR[i + 1], 1f, 0.75f, 0.28f, ea);
+            }
+        }
+
+        // Stars (restored to original full count & classic brightness, with smooth 60fps interpolation)
         for (Star s : stars) {
-            float a = s.a[tl] * fx;
+            float a0 = s.a[tl], a1 = s.a[tlNext];
+            float rawA = a0 + (a1 - a0) * frac;
+            float a = rawA * fx;
             if (a <= 0.002f) continue;
             box(s.x, s.tallY, 6f, 1f, 250f / 255f, 225f / 255f, a);
-            if (s.a[tl] > 0.45f) {
+            if (rawA > 0.45f) {
                 float c = a * 0.7f;
                 box(s.x - 9f, s.tallY, 5f, 220f / 255f, 235f / 255f, 1f, c);
                 box(s.x + 9f, s.tallY, 5f, 220f / 255f, 235f / 255f, 1f, c);
@@ -435,17 +483,54 @@ public class TitleScreen implements Screen {
                 box(s.x, s.tallY + 9f, 5f, 220f / 255f, 235f / 255f, 1f, c);
             }
         }
+
+        // Fireflies (enhanced mystery vibes: 14 well-distributed glowing lights across the cemetery)
         if (frame >= panStart) {
-            for (float[][] ffly : fireflies) {
-                float[] p = ffly[tl];
-                float a = p[2] * fx, x = p[0], y = p[1] + SKY;
-                box(x, y, 8f, 215f / 255f, 1f, 135f / 255f, a);
-                float h = a * 0.35f;                               // soft pixel halo
-                box(x - 8f, y, 8f, 150f / 255f, 220f / 255f, 110f / 255f, h);
-                box(x + 8f, y, 8f, 150f / 255f, 220f / 255f, 110f / 255f, h);
-                box(x, y - 8f, 8f, 150f / 255f, 220f / 255f, 110f / 255f, h);
-                box(x, y + 8f, 8f, 150f / 255f, 220f / 255f, 110f / 255f, h);
+            final int[] activeFf = { 0, 3, 5, 7, 10, 11, 16, 1, 2, 4, 6, 8, 9, 15 };
+            final float[][] ffOffsets = {
+                {   0f,   0f }, // 0: (272, 636) - mid-left
+                {  60f,  40f }, // 3: (476, 752)
+                { -30f,  60f }, // 5: (338, 676)
+                {-120f, -20f }, // 7: far-left trees
+                {  20f,  30f }, // 10: bottom-left grass
+                {  30f, -40f }, // 11: low-left tombstones
+                {  50f, -60f }, // 16: mid-left field
+                {   0f,   0f }, // 1: (1620, 684) - mid-right
+                {  60f, -30f }, // 2: (1776, 706) - far-right
+                { -40f, -30f }, // 4: bottom-right
+                { -60f,  30f }, // 6: mid-right ground
+                {  30f, -50f }, // 8: lower-right field
+                { -50f,  20f }, // 9: mid-right gravestones
+                { -60f,  30f }  // 15: inner-right trees
+            };
+            for (int k = 0; k < activeFf.length; k++) {
+                int fi = activeFf[k];
+                if (fi >= fireflies.length) continue;
+                float[][] ffly = fireflies[fi];
+                float[] p0 = ffly[tl], p1 = ffly[tlNext];
+                float ox = (k < ffOffsets.length) ? ffOffsets[k][0] : 0f;
+                float oy = (k < ffOffsets.length) ? ffOffsets[k][1] : 0f;
+                float x = p0[0] + (p1[0] - p0[0]) * frac + ox;
+                float y = (p0[1] + (p1[1] - p0[1]) * frac + oy) + SKY;
+                float a = (p0[2] + (p1[2] - p0[2]) * frac) * fx * 0.95f;
+                box(x, y, 5.5f, 215f / 255f, 1f, 135f / 255f, a);
+                float h = a * 0.40f;                               // glowing halo
+                box(x - 5f, y, 4.5f, 150f / 255f, 220f / 255f, 110f / 255f, h);
+                box(x + 5f, y, 4.5f, 150f / 255f, 220f / 255f, 110f / 255f, h);
+                box(x, y - 5f, 4.5f, 150f / 255f, 220f / 255f, 110f / 255f, h);
+                box(x, y + 5f, 4.5f, 150f / 255f, 220f / 255f, 110f / 255f, h);
             }
+        }
+
+        // title (static) + animations - drawn AFTER environment & embers so embers never bleed over the title letters
+        float titleA = (kk >= 0f) ? Math.max(0f, 1f - kk / 5f) : 1f;
+        if (titleA > 0f) {
+            mode(false);
+            batch.setColor(1f, 1f, 1f, titleA);
+            batch.draw(titleTex, titleX, TALL_H - (SKY + titleY + titleH), titleW, titleH);
+            if (frame >= readStart && frame < idle0) drawAnim("ttl_highlight", frame - readStart, titleA);   // gold letter sweep
+            drawAnim("ttl_pulse", tl, titleA);                                                                // FILIPINO glow
+            drawAnim("ttl_shimmer", tl, titleA);                                                              // light sweep
         }
 
         // START button (appears after the blur)
@@ -471,7 +556,11 @@ public class TitleScreen implements Screen {
             batch.draw(vignette, vx, vy, W * z, H * z);
         }
         float black = 0f;
-        if (state == State.INTRO && frame < fadeBlack.length) black = fadeBlack[frame] / 255f;
+        if (state == State.INTRO && frame < fadeBlack.length) {
+            float b0 = fadeBlack[frame];
+            float b1 = (frame + 1 < fadeBlack.length) ? fadeBlack[frame + 1] : 0f;
+            black = (b0 + (b1 - b0) * frac) / 255f;
+        }
         black = Math.max(black, fadeOut);
         if (black > 0f) {
             batch.setColor(0f, 0f, 0f, black);

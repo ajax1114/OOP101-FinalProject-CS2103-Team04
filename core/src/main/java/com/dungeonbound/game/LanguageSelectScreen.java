@@ -28,13 +28,16 @@ public final class LanguageSelectScreen extends ScreenAdapter {
 
     private void confirm() {
         if (confirmTimer >= 0f) return; // nakumpirma na
+        AudioManager.getInstance().playBtnSelect();
         list.done = list.sel;
         confirmTimer = 0f;
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(new MenuInput(list, view, this::confirm, null));
+        Gdx.input.setInputProcessor(new MenuInput(
+                list, view, this::confirm, null,
+                () -> AudioManager.getInstance().playBtnHover()));
     }
 
     @Override

@@ -311,6 +311,7 @@ public class LoginScreen implements Screen {
 
     private void trySubmit() {
         if (loading || btnLogin.isDisabled()) return;
+        AudioManager.getInstance().playBtnSelect();
         hideError();
         setLoading(true);
         stage.setKeyboardFocus(null);
@@ -386,6 +387,7 @@ public class LoginScreen implements Screen {
     }
 
 private void onSignUpClicked() {
+    AudioManager.getInstance().playBtnSelect();
     game.setScreen(new SignUpScreen(game));
 }
 
