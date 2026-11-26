@@ -75,6 +75,7 @@ Next labyrinth    Final boss
 
 ---
 
+
 ## 🚀 How to Run the Game (Paano Patakbuhin)
 
 ### System Requirements
@@ -108,6 +109,7 @@ cd OOP101-FinalProject-CS2103-Team04
 
 ---
 
+
 ## OOP Concepts
 
 | Concept | Where it applies |
@@ -129,6 +131,7 @@ cd OOP101-FinalProject-CS2103-Team04
 | **Charmaine T. Argona** ([@eniaxen](https://github.com/eniaxen)) | Character Designer, Repository Manager, Programmer, Documentor |
 | **Dhymple Norshe F. Carandang** ([@ajax1114](https://github.com/ajax1114)) | Enemy Designer, 2D Background Artist, Programmer, Documentor |
 | **Phoebe Leonides M. Dolor** ([@neonekiii](https://github.com/neonekiii)) | GUI & Item Designer, Programmer, Documentor |
+
 
 ---
 

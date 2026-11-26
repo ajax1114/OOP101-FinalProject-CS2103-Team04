@@ -225,6 +225,7 @@ public class AudioManager {
         }
     }
 
+
     public void playBtnSelect() {
         playSfx("audio/sfx_btn_select.ogg", 0.7f);
     }
@@ -252,6 +253,7 @@ public class AudioManager {
     public void playWikiCardSelect() {
         playSfx("audio/sfx_wiki_card_select.ogg", 0.75f);
     }
+
 
     // ----------------------------------------------------------------- Update
 
