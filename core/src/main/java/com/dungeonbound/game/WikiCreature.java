@@ -16,9 +16,18 @@ public final class WikiCreature {
     public final String id;        // gamitin ito sa WikiProgress.unlock("tiyanak")
     public final int number;       // 1 -> "001"
     public final String name;
+
+    public final String cardRegion;// region name sa wiki.atlas ("card_<id>")
+    public final String animRegion;// region name sa wiki.atlas ("anim_<id>")
+    public final String blurRegion;// region name sa wiki.atlas ("blur_<id>")
+    public final String cardFile;  // legacy path
+    public final String animFile;  // legacy path
+    public final String blurFile;  // legacy path
+=======
     public final String cardFile;  // sa assets/ (card sa menu)
     public final String animFile;  // sa assets/ (spritesheet ng LoreScreen)
     public final String blurFile;  // sa assets/ (blurred card sa likod ng enemy sa LoreScreen)
+
     public final String loreTl;    // Tagalog lore
     public final String loreEn;    // English lore
     public final Color bg;         // kulay ng buong background
@@ -28,6 +37,11 @@ public final class WikiCreature {
     private WikiCreature(String id, int number, String name, String loreTl, String loreEn,
                          Color bg, Color panel, Color bar) {
         this.id = id; this.number = number; this.name = name;
+
+        this.cardRegion = "card_" + id;
+        this.animRegion = "anim_" + id;
+        this.blurRegion = "blur_" + id;
+
         this.cardFile = "wiki/card_" + id + ".png";
         this.animFile = "wiki/anim_" + id + ".png";
         this.blurFile = "wiki/blur_" + id + ".png";

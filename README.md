@@ -75,6 +75,41 @@ Next labyrinth    Final boss
 
 ---
 
+
+## 🚀 How to Run the Game (Paano Patakbuhin)
+
+### System Requirements
+- **Java Development Kit (JDK):** Version 17 or higher
+- **Operating System:** Windows, macOS, or Linux
+
+### Quick Start
+Clone the repository and run the desktop application using the included Gradle wrapper:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/neonekiii/OOP101-FinalProject-CS2103-Team04.git
+cd OOP101-FinalProject-CS2103-Team04
+
+# 2. Run the game
+# On Windows (PowerShell / Command Prompt / Git Bash):
+.\gradlew.bat lwjgl3:run
+
+# On macOS / Linux:
+./gradlew lwjgl3:run
+```
+
+### Controls (Mga Kontrol sa Laro)
+
+| Action | Keyboard | Mouse / Touch |
+|---|---|---|
+| **Movement (Galaw)** | `W`, `A`, `S`, `D` or `Arrow Keys` | On-screen Joystick (bottom-left) |
+| **Attack (Atake)** | `SPACE` bar (Sword swing) | Screen / Space |
+| **Pause / Menu** | `ESC` key | In-game buttons |
+| **Navigate Menus** | `W`/`S` or `Up`/`Down`, `Enter` | Mouse Hover / Click |
+
+---
+
+
 ## OOP Concepts
 
 | Concept | Where it applies |
@@ -96,3 +131,15 @@ Next labyrinth    Final boss
 | **Charmaine T. Argona** ([@eniaxen](https://github.com/eniaxen)) | Character Designer, Repository Manager, Programmer, Documentor |
 | **Dhymple Norshe F. Carandang** ([@ajax1114](https://github.com/ajax1114)) | Enemy Designer, 2D Background Artist, Programmer, Documentor |
 | **Phoebe Leonides M. Dolor** ([@neonekiii](https://github.com/neonekiii)) | GUI & Item Designer, Programmer, Documentor |
+
+
+---
+
+## 🛡️ Intellectual Property & Assets Notice
+
+All original pixel art, character animations, folklore monster cards, UI layouts, and audio design in this repository were created specifically for **DungeonBound** (OOP101 Final Project, CS2103 Team 04).
+- **GUI, Item Designs, Wiki Cards & Sound Effects:** Created and owned by **Phoebe Leonides M. Dolor** ([@neonekiii](https://github.com/neonekiii)).
+- **Character Designs:** Created and owned by **Charmaine T. Argona** ([@eniaxen](https://github.com/eniaxen)).
+- **Enemy Designs & 2D Backgrounds:** Created and owned by **Dhymple Norshe F. Carandang** ([@ajax1114](https://github.com/ajax1114)).
+
+> **Notice:** All rights reserved. Unauthorized reproduction, extraction, redistribution, or reuse of these creative assets in other academic submissions or third-party projects without explicit permission from the authors is strictly prohibited.

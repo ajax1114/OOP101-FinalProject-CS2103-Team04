@@ -5,6 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
+
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -51,6 +54,9 @@ public class WikiMenuScreen implements Screen {
     private final Game game;
     private final Stage stage = new Stage(new FitViewport(W, H));
     private final Map<String, Texture> textures = new HashMap<>();
+
+    private TextureAtlas atlas;
+
     private final List<WikiCreature> list = WikiCreature.ALL;
     private final int count = list.size();
     private final int maxTarget = Math.max(0, count - VISIBLE);
@@ -83,6 +89,9 @@ public class WikiMenuScreen implements Screen {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 if (GameControls.is(GameControls.Action.BACK, keycode)) {
+
+                    AudioManager.getInstance().playBtnDeselect();
+
                     goTo(new StartMenuScreen(game));
                     return true;
                 }
@@ -104,30 +113,51 @@ public class WikiMenuScreen implements Screen {
             }
         });
 
+
+        atlas = new TextureAtlas(Gdx.files.internal("wiki/wiki.atlas"));
+
         // 1. Background (kasama na ang itim na linya)
         Image bg = new Image(tex("wiki/background.png", true));
         bg.setSize(W, H);
         stage.addActor(bg);
 
+
+        // 2. Cards (naka-pack sa wiki.atlas)
+=======
         // 2. Cards
+
         for (int i = 0; i < count; i++) {
             final int idx = i;
             WikiCreature c = list.get(i);
             unlocked[i] = WikiProgress.isUnlocked(c.id);
 
+
+            Image card = new Image(atlas.findRegion(unlocked[i] ? c.cardRegion : "card_locked"));
+=======
             Image card = new Image(tex(unlocked[i] ? c.cardFile : "wiki/card_locked.png", true));
+
             card.setSize(CARD_W, CARD_H);
             card.addListener(new ClickListener() {
                 // mouseMoved (hindi enter) para hindi maagaw ng nakatigil na mouse ang keyboard focus
                 @Override
                 public boolean mouseMoved(InputEvent event, float x, float y) {
+
+                    if (focus != idx) {
+                        focus = idx;
+                        AudioManager.getInstance().playWikiCardHover();
+                    }
+=======
                     focus = idx;
+
                     return false;
                 }
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     focus = idx;
                     if (!unlocked[idx]) {
+
+                        AudioManager.getInstance().playBtnDeselect();
+
                         // TEST: double click sa locked card = i-unlock
                         long now = TimeUtils.millis();
                         Gdx.app.log("Wiki", "click locked card " + idx + " (debug=" + DEBUG_DOUBLE_CLICK_UNLOCK + ")");
@@ -153,9 +183,15 @@ public class WikiMenuScreen implements Screen {
         header.setTouchable(Touchable.disabled);
         stage.addActor(header);
 
+
+        // 4. Arrows (naka-pack sa wiki.atlas)
+        leftArrow = makeArrow("arrow_left", ARROW_LEFT_X, -1);
+        rightArrow = makeArrow("arrow_right", ARROW_RIGHT_X, 1);
+=======
         // 4. Arrows
         leftArrow = makeArrow("wiki/arrow_left.png", ARROW_LEFT_X, -1);
         rightArrow = makeArrow("wiki/arrow_right.png", ARROW_RIGHT_X, 1);
+
         stage.addActor(leftArrow);
         stage.addActor(rightArrow);
 
@@ -166,23 +202,48 @@ public class WikiMenuScreen implements Screen {
 
     /** Keyboard: galaw ng focus; sumusunod ang window. */
     private void moveFocus(int dir) {
+
+        int oldFocus = focus;
         focus = MathUtils.clamp(focus + dir, 0, count - 1);
+        if (focus != oldFocus) {
+            AudioManager.getInstance().playWikiCardHover();
+        }
+=======
+        focus = MathUtils.clamp(focus + dir, 0, count - 1);
+
         if (focus < target) target = focus;
         else if (focus > target + VISIBLE - 1) target = focus - (VISIBLE - 1);
     }
 
     /** Arrow buttons / mouse wheel: isang card ang usad ng window. */
     private void scrollWindow(int dir) {
+
+        int oldTarget = target;
         target = MathUtils.clamp(target + dir, 0, maxTarget);
         focus = Math.min(MathUtils.clamp(focus, target, target + VISIBLE - 1), count - 1);
+        if (target != oldTarget) {
+            AudioManager.getInstance().playWikiCardHover();
+        }
+=======
+        target = MathUtils.clamp(target + dir, 0, maxTarget);
+        focus = Math.min(MathUtils.clamp(focus, target, target + VISIBLE - 1), count - 1);
+
     }
 
     private void open(int idx) {
         if (idx < 0 || idx >= count) return;
         if (!unlocked[idx]) {
+
+            AudioManager.getInstance().playBtnDeselect();
             if (DEBUG_DOUBLE_CLICK_UNLOCK) debugUnlock(idx); // TEST: Enter sa locked card = i-unlock
             return;
         }
+        AudioManager.getInstance().playWikiCardSelect();
+=======
+            if (DEBUG_DOUBLE_CLICK_UNLOCK) debugUnlock(idx); // TEST: Enter sa locked card = i-unlock
+            return;
+        }
+
         goTo(new LoreScreen(game, idx));
     }
 
@@ -191,7 +252,11 @@ public class WikiMenuScreen implements Screen {
         WikiCreature c = list.get(idx);
         WikiProgress.unlock(c.id);
         unlocked[idx] = true;
+
+        cards[idx].setDrawable(new TextureRegionDrawable(atlas.findRegion(c.cardRegion)));
+=======
         cards[idx].setDrawable(new TextureRegionDrawable(new TextureRegion(tex(c.cardFile, true))));
+
     }
 
     private void goTo(Screen next) {
@@ -199,8 +264,13 @@ public class WikiMenuScreen implements Screen {
         Gdx.app.postRunnable(this::dispose); // ligtas na mag-dispose pagkatapos ng event
     }
 
+
+    private Image makeArrow(String region, float x, final int dir) {
+        Image arrow = new Image(atlas.findRegion(region));
+=======
     private Image makeArrow(String file, float x, final int dir) {
         Image arrow = new Image(tex(file, false)); // pixel art: Nearest
+
         arrow.setSize(ARROW_W, ARROW_H);
         arrow.setPosition(x, ARROW_Y);
         arrow.addListener(new ClickListener() {
@@ -275,6 +345,9 @@ public class WikiMenuScreen implements Screen {
         if (disposed) return;
         disposed = true;
         stage.dispose();
+
+        if (atlas != null) atlas.dispose();
+
         for (Texture t : textures.values()) t.dispose();
     }
 }

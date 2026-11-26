@@ -41,7 +41,12 @@ public class LoadingScreen implements Screen {
     private static final float FIT_H = 700f;
     private static final float MAX_SCALE = 1.6f;
 
+
+    private static final float MIN_SHOW_TIME = 8.0f;    // 8.0s show time para tumugma sa ~9.2s magical sound
+    private static final float FADE_OUT_TIME = 1.2f;    // 1.2s makinis na fade out sa dulo (total = 9.2s)
+=======
     private static final float MIN_SHOW_TIME = 1.2f;    // para hindi mag-flash kapag mabilis ang load
+
     private static final float SPIN_STEP     = 1f / 12f; // 12 tuldok, 1 step = 30 degrees
 
     private final Game game;
@@ -141,9 +146,39 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void show() {
+
+        Gdx.input.setInputProcessor(new com.badlogic.gdx.InputAdapter() {
+            @Override
+            public boolean keyDown(int keycode) {
+                // Developer skip: Space / Enter pagkatapos ng 2s kung tapos nang mag-load ang assets
+                if (assets.isFinished() && elapsed >= 2.0f &&
+                    (keycode == com.badlogic.gdx.Input.Keys.SPACE || keycode == com.badlogic.gdx.Input.Keys.ENTER)) {
+                    startLeaving();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                if (assets.isFinished() && elapsed >= 2.0f) {
+                    startLeaving();
+                    return true;
+                }
+                return false;
+            }
+        });
+        stage.getRoot().getColor().a = 0f;
+        stage.getRoot().addAction(Actions.fadeIn(0.4f));
+
+        // Fade out menu music and play mystical loading sound
+        AudioManager.getInstance().fadeOutMusic(0.5f);
+        AudioManager.getInstance().playSfx("audio/sfx_loading.ogg", 0.75f);
+
         Gdx.input.setInputProcessor(null);
         stage.getRoot().getColor().a = 0f;
         stage.getRoot().addAction(Actions.fadeIn(0.3f));
+
     }
 
     @Override
@@ -184,6 +219,29 @@ public class LoadingScreen implements Screen {
         stage.draw();
 
         if (loaded && !leaving && elapsed >= MIN_SHOW_TIME) {
+
+            startLeaving();
+        }
+
+        if (switchNow) {
+            switchNow = false;
+            goToGame();
+        }
+    }
+
+    private void startLeaving() {
+        if (!leaving) {
+            leaving = true;
+            stage.getRoot().addAction(Actions.sequence(
+                Actions.fadeOut(FADE_OUT_TIME),
+                Actions.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        switchNow = true; // lilipat pagkatapos ng makinis na fade out
+                    }
+                })));
+        }
+=======
             leaving = true;
             stage.getRoot().addAction(Actions.sequence(
                 Actions.fadeOut(0.3f),
@@ -199,6 +257,7 @@ public class LoadingScreen implements Screen {
             switchNow = false;
             goToGame();
         }
+
     }
 
     private void goToGame() {

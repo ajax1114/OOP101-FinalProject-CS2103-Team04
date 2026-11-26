@@ -131,7 +131,9 @@ public final class SettingsScreen extends ScreenAdapter {
         @Override float slider() { return get(); }
         @Override void adjust(int dir) {
             set(MathUtils.clamp(Math.round(get() * 10f) / 10f + dir * 0.1f, 0f, 1f));
+
             if (kind == 2) AudioManager.getInstance().playSfx("audio/sfx_whoosh.wav", 0.5f);
+
         }
         @Override void setSlider(float v) { set(MathUtils.clamp(Math.round(v * 20f) / 20f, 0f, 1f)); }
     }
@@ -207,19 +209,45 @@ public final class SettingsScreen extends ScreenAdapter {
 
     private void move(int d) {
         if (!inContent) {
+
+            int old = leftSel;
+            leftSel = (leftSel + d + LEFT_COUNT) % LEFT_COUNT;
+            if (leftSel < TAB_COUNT) { tab = leftSel; row = 0; }
+            if (old != leftSel) AudioManager.getInstance().playSettingsHover();
+        } else {
+            int n = curRows().size();
+            int old = row;
+            row = (row + d + n) % n;
+            if (old != row) AudioManager.getInstance().playSettingsHover();
+
             leftSel = (leftSel + d + LEFT_COUNT) % LEFT_COUNT;
             if (leftSel < TAB_COUNT) { tab = leftSel; row = 0; }
         } else {
             int n = curRows().size();
             row = (row + d + n) % n;
+
         }
     }
 
     private void enterContent() {
+
+        if (leftSel < TAB_COUNT) {
+            inContent = true;
+            row = 0;
+            AudioManager.getInstance().playSettingsClick();
+        }
+    }
+
+    private void leaveContent() {
+        inContent = false;
+        AudioManager.getInstance().playBtnDeselect();
+    }
+
         if (leftSel < TAB_COUNT) { inContent = true; row = 0; }
     }
 
     private void leaveContent() { inContent = false; }
+
 
     private static boolean isUp(int k) { return k == Input.Keys.UP || k == Input.Keys.W; }
     private static boolean isDown(int k) { return k == Input.Keys.DOWN || k == Input.Keys.S; }
@@ -277,26 +305,58 @@ public final class SettingsScreen extends ScreenAdapter {
             if (isUp(k)) { move(-1); return true; }
             if (isDown(k)) { move(1); return true; }
             if (isRight(k)) {
+
+                if (!inContent) enterContent();
+                else {
+                    curRows().get(row).adjust(1);
+                    AudioManager.getInstance().playSettingsClick();
+                }
+
                 if (!inContent) enterContent(); else curRows().get(row).adjust(1);
+
                 return true;
             }
             if (isLeft(k)) {
                 if (inContent) {
                     Row r = curRows().get(row);
+
+                    if (r.slider() >= 0f) {
+                        r.adjust(-1);
+                        AudioManager.getInstance().playSettingsClick();
+                    } else leaveContent();
+
                     if (r.slider() >= 0f) r.adjust(-1); else leaveContent();
+
                 }
                 return true;
             }
             if (isSelect(k)) {
                 if (!inContent) {
+
+                    if (leftSel == TAB_COUNT) {
+                        AudioManager.getInstance().playBtnDeselect();
+                        onBack.run();
+                    } else enterContent();
+                } else {
+                    AudioManager.getInstance().playSettingsClick();
+=======
                     if (leftSel == TAB_COUNT) onBack.run(); else enterContent();
                 } else {
+
                     curRows().get(row).activate();
                 }
                 return true;
             }
             if (isBack(k)) {
+
+                if (inContent) leaveContent();
+                else {
+                    AudioManager.getInstance().playBtnDeselect();
+                    onBack.run();
+                }
+=======
                 if (inContent) leaveContent(); else onBack.run();
+
                 return true;
             }
             return false;
@@ -308,13 +368,30 @@ public final class SettingsScreen extends ScreenAdapter {
             Vector2 p = toUi(sx, sy);
             int l = leftHit(p.x, p.y);
             if (l >= 0) {
+
+                if (inContent || leftSel != l) {
+                    AudioManager.getInstance().playSettingsHover();
+                }
+
+
                 leftSel = l;
                 if (l < TAB_COUNT) { tab = l; row = 0; }
                 inContent = false;
                 return true;
             }
             int r = rowHit(p.x, p.y);
+
+            if (r >= 0) {
+                if (!inContent || row != r) {
+                    AudioManager.getInstance().playSettingsHover();
+                }
+                inContent = true;
+                row = r;
+                return true;
+            }
+=======
             if (r >= 0) { inContent = true; row = r; return true; }
+
             return false;
         }
 
@@ -326,7 +403,18 @@ public final class SettingsScreen extends ScreenAdapter {
             if (l >= 0) {
                 leftSel = l;
                 inContent = false;
+
+                if (l == TAB_COUNT) {
+                    AudioManager.getInstance().playBtnDeselect();
+                    onBack.run();
+                } else {
+                    AudioManager.getInstance().playSettingsClick();
+                    tab = l;
+                    row = 0;
+                }
+
                 if (l == TAB_COUNT) onBack.run(); else { tab = l; row = 0; }
+
                 return true;
             }
             int r = rowHit(p.x, p.y);
@@ -334,6 +422,9 @@ public final class SettingsScreen extends ScreenAdapter {
                 inContent = true;
                 row = r;
                 Row rw = curRows().get(r);
+
+                AudioManager.getInstance().playSettingsClick();
+
                 if (rw.slider() >= 0f) { dragging = true; dragSlider(p.x); }
                 else rw.activate();
                 return true;
