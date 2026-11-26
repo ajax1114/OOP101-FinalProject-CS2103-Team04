@@ -292,6 +292,7 @@ public class SignUpScreen implements Screen {
 
     private void trySubmit() {
         if (loading || btnSignUp.isDisabled()) return;
+        AudioManager.getInstance().playBtnSelect();
 
         String pw = inputPassword.getText();
         if (pw.length() < MIN_PASSWORD_LENGTH) {
@@ -367,6 +368,7 @@ public class SignUpScreen implements Screen {
     }
 
     private void onLoginClicked() {
+        AudioManager.getInstance().playBtnSelect();
         game.setScreen(new LoginScreen(game));
     }
 

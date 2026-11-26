@@ -9,10 +9,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
@@ -70,11 +69,11 @@ public class LoreScreen implements Screen {
     private final Game game;
     private final int index;
     private final Stage stage = new Stage(new FitViewport(W, H));
-
     private TextureAtlas atlas;
-
+    private boolean ownsAtlas;
     private final List<Texture> textures = new ArrayList<>();
     private final List<BitmapFont> fonts = new ArrayList<>();
+    private Texture whiteTex;
     private boolean disposed;
 
     public LoreScreen(Game game, int index) {
@@ -98,9 +97,13 @@ public class LoreScreen implements Screen {
             }
         });
 
-
-        atlas = new TextureAtlas(Gdx.files.internal("wiki/wiki.atlas"));
-
+        if (game instanceof DungeonBound) {
+            atlas = ((DungeonBound) game).getWikiAtlas();
+            ownsAtlas = false;
+        } else {
+            atlas = new TextureAtlas(Gdx.files.internal("wiki/wiki.atlas"));
+            ownsAtlas = true;
+        }
 
         // 1. Background (solid, kulay ng creature)
         Image bg = new Image(solid(c.bg));
@@ -111,31 +114,17 @@ public class LoreScreen implements Screen {
         Group left = new Group();
         left.setTouchable(Touchable.disabled);
 
-
         TextureRegion blurRegion = atlas.findRegion(c.blurRegion);
         float cardH = CARD_H;
         float cardW = cardH * blurRegion.getRegionWidth() / (float) blurRegion.getRegionHeight();
         float cardX = CARD_CX - cardW / 2f, cardY = CARD_CY - cardH / 2f;
         Image blurCard = new Image(blurRegion);
-=======
-        Texture blurTex = new Texture(Gdx.files.internal(c.blurFile), true);
-        blurTex.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
-        textures.add(blurTex);
-        float cardH = CARD_H;
-        float cardW = cardH * blurTex.getWidth() / blurTex.getHeight();
-        float cardX = CARD_CX - cardW / 2f, cardY = CARD_CY - cardH / 2f;
-        Image blurCard = new Image(blurTex);
-
         blurCard.setSize(cardW, cardH);
         blurCard.setPosition(cardX, cardY);
         left.addActor(blurCard);
 
         // paa ng enemy ay nasa ibabang bahagi ng frame sa blurred card
-
         AnimatedImage enemy = new AnimatedImage(loadAnimation(c.animRegion));
-=======
-        AnimatedImage enemy = new AnimatedImage(loadAnimation(c.animFile));
-
         enemy.setSize(SPRITE_SIZE, SPRITE_SIZE);
         enemy.setPosition(CARD_CX - SPRITE_SIZE / 2f, SPRITE_FEET_Y - SPRITE_SIZE * 0.08f);
         left.addActor(enemy);
@@ -165,9 +154,7 @@ public class LoreScreen implements Screen {
         barLine.setPosition(barX, barY - BAR_LINE_H);
         right.addActor(barLine);
 
-        FreeTypeFontGenerator titleGen = new FreeTypeFontGenerator(Gdx.files.internal(TITLE_FONT));
-        BitmapFont titleFont = font(titleGen, 64);
-        titleGen.dispose();
+        BitmapFont titleFont = getFont(TITLE_FONT, 64);
         Label title = new Label(c.name.toUpperCase(), new Label.LabelStyle(titleFont, TITLE_COLOR));
         title.setAlignment(Align.center);
         title.setSize(barW, BAR_H);
@@ -181,21 +168,17 @@ public class LoreScreen implements Screen {
         float avail = textTop - (PANEL_Y + TEXT_PAD_BOTTOM);
         String[] paragraphs = c.getLore().split("\n\n");
 
-        FreeTypeFontGenerator bodyGen = new FreeTypeFontGenerator(Gdx.files.internal(BODY_FONT));
         JustifiedText text = null;
         for (int size : new int[] {32, 30, 28, 26, 24, 22}) {
-            BitmapFont f = font(bodyGen, size);
+            BitmapFont f = getFont(BODY_FONT, size);
             text = new JustifiedText(f, BODY_COLOR, paragraphs, textW, size * 1.28f, size * 0.75f);
             if (text.getHeight() <= avail) break;
         }
-        bodyGen.dispose();
         text.setPosition(textX, textTop - text.getHeight());
         right.addActor(text);
 
         // 7. Back hint (clickable)
-        FreeTypeFontGenerator smallGen = new FreeTypeFontGenerator(Gdx.files.internal(BODY_FONT));
-        BitmapFont smallFont = font(smallGen, 28);
-        smallGen.dispose();
+        BitmapFont smallFont = getFont(BODY_FONT, 28);
         Label backLbl = new Label(Strings.btnBack(), new Label.LabelStyle(smallFont, Color.WHITE));
         backLbl.setPosition(60, 40);
         backLbl.addListener(new ClickListener() {
@@ -239,23 +222,16 @@ public class LoreScreen implements Screen {
         backLbl.addAction(Actions.sequence(Actions.delay(0.5f), Actions.fadeIn(0.3f)));
     }
 
-
     private void back() {
         AudioManager.getInstance().playBtnDeselect();
         goTo(new WikiMenuScreen(game, index));
     }
 
-    private void back() { goTo(new WikiMenuScreen(game, index)); }
-
-
     /** Lipat sa kalapit na unlocked na creature (walang wrap). */
     private void browse(int dir) {
         for (int i = index + dir; i >= 0 && i < WikiCreature.ALL.size(); i += dir) {
             if (WikiProgress.isUnlocked(WikiCreature.ALL.get(i).id)) {
-
                 AudioManager.getInstance().playWikiCardHover();
-
-
                 goTo(new LoreScreen(game, i));
                 return;
             }
@@ -269,24 +245,12 @@ public class LoreScreen implements Screen {
 
     // ---------- Assets ----------
 
-
     /** Nilo-load ang mga naka-pack na frames mula sa TextureAtlas at ginagawang looping animation. */
     private Animation<TextureRegion> loadAnimation(String animRegion) {
         com.badlogic.gdx.utils.Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions(animRegion);
         TextureRegion[] frames = new TextureRegion[regions.size];
         for (int i = 0; i < regions.size; i++) {
             frames[i] = regions.get(i);
-=======
-    /** Hinihiwa ang horizontal spritesheet (FRAME_COUNT x FRAME_SIZE) at ginagawang looping animation. */
-    private Animation<TextureRegion> loadAnimation(String file) {
-        Texture t = new Texture(Gdx.files.internal(file));
-        t.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest); // pixel art
-        textures.add(t);
-        TextureRegion[] frames = new TextureRegion[WikiCreature.FRAME_COUNT];
-        for (int i = 0; i < frames.length; i++) {
-            frames[i] = new TextureRegion(t, i * WikiCreature.FRAME_SIZE, 0,
-                WikiCreature.FRAME_SIZE, WikiCreature.FRAME_SIZE);
-
         }
         Animation<TextureRegion> anim = new Animation<TextureRegion>(FRAME_TIME, frames);
         anim.setPlayMode(Animation.PlayMode.LOOP);
@@ -294,13 +258,25 @@ public class LoreScreen implements Screen {
     }
 
     private Drawable solid(Color color) {
-        Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pm.setColor(Color.WHITE);
-        pm.fill();
-        Texture t = new Texture(pm);
-        pm.dispose();
-        textures.add(t);
-        return new TextureRegionDrawable(new TextureRegion(t)).tint(color);
+        if (whiteTex == null) {
+            Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+            pm.setColor(Color.WHITE);
+            pm.fill();
+            whiteTex = new Texture(pm);
+            pm.dispose();
+            textures.add(whiteTex);
+        }
+        return new TextureRegionDrawable(new TextureRegion(whiteTex)).tint(color);
+    }
+
+    private BitmapFont getFont(String path, int size) {
+        if (game instanceof DungeonBound && BODY_FONT.equals(path)) {
+            return ((DungeonBound) game).getWikiFont(size);
+        }
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal(path));
+        BitmapFont f = font(gen, size);
+        gen.dispose();
+        return f;
     }
 
     private BitmapFont font(FreeTypeFontGenerator gen, int size) {
@@ -353,13 +329,12 @@ public class LoreScreen implements Screen {
             float top; // layo mula sa taas ng actor
         }
 
-        private final BitmapFont font;
+        private final BitmapFontCache cache;
         private final Color color;
-        private final List<Line> lines = new ArrayList<>();
-        private final float spaceW;
+        private float lastAlpha = -1f;
 
         JustifiedText(BitmapFont font, Color color, String[] paragraphs, float width, float lineH, float paraGap) {
-            this.font = font;
+            this.cache = new BitmapFontCache(font);
             this.color = color;
             setTouchable(Touchable.disabled);
 
@@ -367,8 +342,9 @@ public class LoreScreen implements Screen {
             gl.setText(font, "a a");
             float aa = gl.width;
             gl.setText(font, "aa");
-            spaceW = Math.max(aa - gl.width, font.getSpaceXadvance());
+            float spaceW = Math.max(aa - gl.width, font.getSpaceXadvance());
 
+            List<Line> lines = new ArrayList<>();
             float y = 0;
             for (int p = 0; p < paragraphs.length; p++) {
                 Line cur = new Line();
@@ -397,26 +373,33 @@ public class LoreScreen implements Screen {
                 if (p < paragraphs.length - 1) y += paraGap;
             }
             setSize(width, y);
-        }
 
-        @Override
-        public void draw(Batch batch, float parentAlpha) {
-            font.setColor(color.r, color.g, color.b, color.a * getColor().a * parentAlpha);
-            float topY = getY() + getHeight();
+            cache.setColor(color);
             for (Line line : lines) {
                 int n = line.words.size();
                 float gap = spaceW;
                 if (line.justify && n > 1) {
                     float sum = 0;
                     for (float w : line.widths) sum += w;
-                    gap = (getWidth() - sum) / (n - 1);
+                    gap = (width - sum) / (n - 1);
                 }
-                float x = getX();
+                float x = 0;
                 for (int i = 0; i < n; i++) {
-                    font.draw(batch, line.words.get(i), x, topY - line.top);
+                    cache.addText(line.words.get(i), x, -line.top);
                     x += line.widths.get(i) + gap;
                 }
             }
+        }
+
+        @Override
+        public void draw(Batch batch, float parentAlpha) {
+            float alpha = color.a * getColor().a * parentAlpha;
+            if (Math.abs(alpha - lastAlpha) > 0.001f) {
+                lastAlpha = alpha;
+                cache.tint(new Color(color.r, color.g, color.b, alpha));
+            }
+            cache.setPosition(getX(), getY() + getHeight());
+            cache.draw(batch);
         }
     }
 
@@ -439,9 +422,7 @@ public class LoreScreen implements Screen {
         if (disposed) return;
         disposed = true;
         stage.dispose();
-
-        if (atlas != null) atlas.dispose();
-
+        if (ownsAtlas && atlas != null) atlas.dispose();
         for (Texture t : textures) t.dispose();
         for (BitmapFont f : fonts) f.dispose();
     }

@@ -111,7 +111,19 @@ public class AudioManager {
 
     // ------------------------------------------------------------------ Music
 
+    public void playTitleMusic() {
+        String bgmPath = Gdx.files.internal("audio/bgm_title.mp3").exists()
+                ? "audio/bgm_title.mp3"
+                : "audio/bgm_title.ogg";
+        playMusic(bgmPath, true, 0.7f);
+    }
+
     public void playMusic(String path, boolean loop, float volume) {
+        // If an OGG was requested but a 44.1kHz MP3 exists, use the MP3 to avoid 96kHz buffer underruns
+        if (path != null && path.endsWith("bgm_title.ogg") && Gdx.files.internal("audio/bgm_title.mp3").exists()) {
+            path = "audio/bgm_title.mp3";
+        }
+
         if (currentMusicPath != null && currentMusicPath.equals(path) && currentMusic != null && currentMusic.isPlaying()) {
             return;
         }
@@ -200,6 +212,17 @@ public class AudioManager {
 
     // -------------------------------------------------------------------- SFX
 
+    public void preloadSfx(String path) {
+        if (soundCache.containsKey(path)) return;
+        FileHandle fh = Gdx.files.internal(path);
+        if (!fh.exists()) return;
+        try {
+            soundCache.put(path, Gdx.audio.newSound(fh));
+        } catch (Exception e) {
+            Gdx.app.error("AudioManager", "Failed to preload sound: " + path, e);
+        }
+    }
+
     public void playSfx(String path, float volume) {
         FileHandle fh = Gdx.files.internal(path);
         if (!fh.exists()) {
@@ -225,6 +248,55 @@ public class AudioManager {
         }
     }
 
+    public long playSfxId(String path, float volume) {
+        FileHandle fh = Gdx.files.internal(path);
+        if (!fh.exists()) return -1;
+        Sound sound = soundCache.get(path);
+        if (sound == null) {
+            try {
+                sound = Gdx.audio.newSound(fh);
+                soundCache.put(path, sound);
+            } catch (Exception e) {
+                return -1;
+            }
+        }
+        try {
+            return sound.play(volume * masterSfxVolume);
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    public void setSfxSoundVolume(String path, long soundId, float volume) {
+        Sound sound = soundCache.get(path);
+        if (sound != null && soundId != -1) {
+            try {
+                sound.setVolume(soundId, MathUtils.clamp(volume, 0f, 1f) * masterSfxVolume);
+            } catch (Exception ignored) {}
+        }
+    }
+
+    public void stopSfx(String path, long soundId) {
+        Sound sound = soundCache.get(path);
+        if (sound != null) {
+            try {
+                if (soundId != -1) {
+                    sound.stop(soundId);
+                } else {
+                    sound.stop();
+                }
+            } catch (Exception ignored) {}
+        }
+    }
+
+    public void stopSfx(String path) {
+        Sound sound = soundCache.get(path);
+        if (sound != null) {
+            try {
+                sound.stop();
+            } catch (Exception ignored) {}
+        }
+    }
 
     public void playBtnSelect() {
         playSfx("audio/sfx_btn_select.ogg", 0.7f);
@@ -253,7 +325,6 @@ public class AudioManager {
     public void playWikiCardSelect() {
         playSfx("audio/sfx_wiki_card_select.ogg", 0.75f);
     }
-
 
     // ----------------------------------------------------------------- Update
 

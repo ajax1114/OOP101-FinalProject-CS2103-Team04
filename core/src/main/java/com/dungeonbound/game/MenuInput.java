@@ -10,13 +10,20 @@ public final class MenuInput extends InputAdapter {
     private final PixelViewport view;
     private final Runnable onConfirm;
     private final Runnable onBack; // puwedeng null
+    private final Runnable onHover; // puwedeng null
     private final Vector2 tmp = new Vector2();
+    private int hovered = -1;
 
     public MenuInput(MenuList list, PixelViewport view, Runnable onConfirm, Runnable onBack) {
+        this(list, view, onConfirm, onBack, null);
+    }
+
+    public MenuInput(MenuList list, PixelViewport view, Runnable onConfirm, Runnable onBack, Runnable onHover) {
         this.list = list;
         this.view = view;
         this.onConfirm = onConfirm;
         this.onBack = onBack;
+        this.onHover = onHover;
     }
 
     @Override
@@ -50,6 +57,10 @@ public final class MenuInput extends InputAdapter {
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         int i = hitAt(screenX, screenY);
+        if (i != hovered) {
+            hovered = i;
+            if (i >= 0 && onHover != null) onHover.run();
+        }
         if (i >= 0) list.sel = i;
         return i >= 0;
     }
