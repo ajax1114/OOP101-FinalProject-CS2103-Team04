@@ -1,3 +1,7 @@
+
+.gradle/
+build/
+
 ## Gradle:
 .gradle/
 gradle-app.setting
@@ -15,6 +19,7 @@ gradle-app.setting
 /shared/build/
 
 ## Java:
+
 *.class
 *.war
 *.ear
